@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       status: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM("success", "pending", "failed"),
         allowNull: false,
       },
       orderId: {

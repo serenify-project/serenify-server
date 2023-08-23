@@ -23,7 +23,7 @@ module.exports = {
         allowNull: false,
       },
       role: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM("mentor", "mentee"),
         allowNull: false,
       },
       birthDate: {
