@@ -1,4 +1,4 @@
-const { checkPassword } = require("../helpers/bcrypt");
+const { checkPassword, hashPassword } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
 const { User } = require("../models/");
 
@@ -54,34 +54,30 @@ class userController {
 
   static async editUser(req, res, next) {
     try {
-      // console.log("controller edit hitted <<<<<,");
       const { userId } = req.additionalData;
       const { username, email, password, role, birthDate, gender } = req.body;
 
-      // console.log(username, email, password, role, birthDate, gender, "<<<");
+      const editUser = await User.update(
+        {
+          username,
+          email,
+          password: hashPassword(password),
+          role,
+          birthDate,
+          gender,
+        },
+        {
+          where: {
+            id: userId,
+          },
+        }
+      );
 
-      const user = await User.findByPk(userId);
+      if (!editUser) throw { name: "userEdit" };
 
-      // console.log(user, "<<< user di controller edit");
-
-      if (!user) {
-        throw { name: "NotFound" };
-      }
-
-      const updatedUserData = {
-        username,
-        email,
-        password: generateToken(password), // Hash the new password
-        role,
-        birthDate,
-        gender,
-      };
-
-      console.log(updatedUserData, "<<< data yang mau di update");
-
-      await user.update(updatedUserData);
-
-      res.status(200).json({ message: "User data updated successfully", user });
+      res.status(201).json({
+        message: `User with id ${userId} has been updated`,
+      });
     } catch (error) {
       next(error);
     }
@@ -89,21 +85,16 @@ class userController {
 
   static async deleteUser(req, res, next) {
     try {
-      // console.log("delete user controler has been hitted");
       const { userId } = req.additionalData;
 
-      // console.log(userId, "<<");
-
       const user = await User.findByPk(userId);
-
-      // console.log(user, "<<<");
 
       if (!user) {
         throw { name: "NotFound" };
       }
 
       const deleteUser = await user.destroy({
-        where: { userId: id },
+        where: { id: userId },
       });
 
       if (deleteUser) {
