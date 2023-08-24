@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Package extends Model {
     /**
@@ -11,17 +9,56 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Package.hasMany(models.Transaction, { foreignKey: "PackageId" });
     }
   }
-  Package.init({
-    name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    price: DataTypes.INTEGER,
-    duration: DataTypes.INTEGER,
-    schedule: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'Package',
-  });
+  Package.init(
+    {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Name is required" },
+          notEmpty: { msg: "Name is required" },
+        },
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Description is required" },
+          notEmpty: { msg: "Description is required" },
+        },
+      },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Price is required" },
+          notEmpty: { msg: "Price is required" },
+        },
+      },
+      duration: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Duration is required" },
+          notEmpty: { msg: "Duration is required" },
+        },
+      },
+      schedule: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Schedule is required" },
+          notEmpty: { msg: "Schedule is required" },
+        },
+      },
+    },
+    {
+      sequelize,
+      modelName: "Package",
+    }
+  );
   return Package;
 };

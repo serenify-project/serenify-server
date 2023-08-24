@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Transaction extends Model {
     /**
@@ -11,16 +9,49 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Transaction.belongsTo(models.Package, { foreignKey: "PackageId" });
+      Transaction.belongsTo(models.User, { foreignKey: "UserId" });
     }
   }
-  Transaction.init({
-    status: DataTypes.STRING,
-    orderId: DataTypes.STRING,
-    UserId: DataTypes.INTEGER,
-    PackageId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Transaction',
-  });
+  Transaction.init(
+    {
+      status: {
+        type: DataTypes.ENUM("success", "pending", "failed"),
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Status is required" },
+          notEmpty: { msg: "Status is required" },
+        },
+      },
+      orderId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "order Id Id is required" },
+          notEmpty: { msg: "order Id Id is required" },
+        },
+      },
+      UserId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "User Id is required" },
+          notEmpty: { msg: "User Id is required" },
+        },
+      },
+      PackageId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Package Id is required" },
+          notEmpty: { msg: "Package Id is required" },
+        },
+      },
+    },
+    {
+      sequelize,
+      modelName: "Transaction",
+    }
+  );
   return Transaction;
 };
