@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Package.hasMany(models.Transaction, { foreignKey: "PackageId" });
-      Package.hasMany(models.Schedule, { foreignKey: "packageId" });
+      Package.hasMany(models.Schedule, { foreignKey: "PackageId" });
     }
   }
   Package.init(
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
         validate: {
           notNull: { msg: "Description is required" },

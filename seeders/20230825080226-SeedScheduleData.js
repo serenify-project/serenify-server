@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-const schedules = require("../db/schedules.json")
+const schedules = require("../db/schedules.json");
 schedules.forEach((schedule) => {
-  schedule.createdAt = schedule.updatedAt = new Date()
-})
+  schedule.createdAt = schedule.updatedAt = new Date();
+});
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -16,8 +16,8 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-    */
-    await queryInterface.bulkInsert("Schedules", schedules, {})
+     */
+    await queryInterface.bulkInsert("Schedules", schedules, {});
   },
 
   async down(queryInterface, Sequelize) {
@@ -27,6 +27,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    await queryInterface.bulkDelete("Schedules", schedules, {})
-  }
+    await queryInterface.bulkDelete("Schedules");
+  },
 };
