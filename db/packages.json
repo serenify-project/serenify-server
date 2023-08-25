@@ -1,24 +1,38 @@
 [
   {
-    "name": "name 1",
-    "description": "desc 1",
-    "duration": 10000,
-    "price": 100000,
-    "schedule": [
-      "2023-09-21 14:20:27.816 +0700",
-      "2023-09-22 14:20:27.816 +0700",
-      "2023-09-23 14:20:27.816 +0700"
-    ]
+    "name": "Stress Relief",
+    "description": "This program focuses on stress management and relaxation techniques.",
+    "duration": 6000,
+    "price": 75000
   },
   {
-    "name": "name 2",
-    "description": "desc 2",
-    "duration": 10000,
-    "price": 100000,
-    "schedule": [
-      "2023-09-24 14:20:27.816 +0700",
-      "2023-09-25 14:20:27.816 +0700",
-      "2023-09-26 14:20:27.816 +0700"
-    ]
+    "name": "Emotional Resilience",
+    "description": "A comprehensive program for building emotional resilience and coping strategies.",
+    "duration": 8000,
+    "price": 120000
+  },
+  {
+    "name": "Mindfulness Meditation",
+    "description": "Learn the practice of mindfulness meditation to enhance mental clarity and focus.",
+    "duration": 5000,
+    "price": 85000
+  },
+  {
+    "name": "Positive Psychology",
+    "description": "Discover techniques to cultivate a positive outlook and improve overall well-being.",
+    "duration": 7000,
+    "price": 95000
+  },
+  {
+    "name": "Cognitive Behavioral Therapy (CBT)",
+    "description": "An evidence-based program to address negative thought patterns and behavior.",
+    "duration": 9000,
+    "price": 135000
+  },
+  {
+    "name": "Social Anxiety Support",
+    "description": "Designed for those struggling with social anxiety to develop confidence in social situations.",
+    "duration": 7500,
+    "price": 110000
   }
 ]

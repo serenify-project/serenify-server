@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Package.hasMany(models.Transaction, { foreignKey: "PackageId" });
+      Package.hasMany(models.Schedule, { foreignKey: "PackageId" });
     }
   }
   Package.init(
