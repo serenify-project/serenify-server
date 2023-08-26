@@ -6,10 +6,10 @@
   "scripts": {
     "test": "jest --runInBand",
     "start": "nodemon app.js",
-        "mu": "sequelize db:migrate:undo:all",
-        "ma": "sequelize db:migrate",
-        "sa": "sequelize db:seed:all",
-        "all": "npm run mu && npm run ma && npm run sa && npm run start",
+    "mu": "sequelize db:migrate:undo:all",
+    "ma": "sequelize db:migrate",
+    "sa": "sequelize db:seed:all",
+    "all": "npm run mu && npm run ma && npm run sa && npm run start",
     "modelUser": "npx sequelize model:create --name User --attributes username:string,email:string,password:string,role:string,birthDate:date,gender:string",
     "modelPackage": "npx sequelize model:create --name Package --attributes name:string,description:string,price:integer,duration:integer,schedule:date",
     "modelTransaction": "npx sequelize model:create --name Transaction --attributes status:string,orderId:string,UserId:integer,PackageId:integer"

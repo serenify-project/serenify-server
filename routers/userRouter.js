@@ -5,7 +5,7 @@ const router = require("express").Router();
 router.post("/users/login", userController.loginUser);
 router.post("/users/register", userController.registerUser);
 
-router.put("/users", Authentication, userController.editUser);
-router.delete("/users", Authentication, userController.deleteUser);
+router.delete("/users/:id", userController.deleteUser);
+router.put("/users/:id", userController.editUser);
 
 module.exports = router;
