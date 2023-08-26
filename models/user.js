@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(models.Transaction, { foreignKey: "UserId" });
+      User.hasMany(models.Activity, { foreignKey: "UserId" });
     }
   }
   User.init(
@@ -64,6 +65,9 @@ module.exports = (sequelize, DataTypes) => {
           notNull: { msg: "Gender is required" },
           notEmpty: { msg: "Gender is required" },
         },
+      },
+      userFirebaseId: {
+        type: DataTypes.STRING,
       },
     },
     {
