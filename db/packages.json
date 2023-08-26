@@ -2,19 +2,19 @@
   {
     "name": "Regular",
     "description": "Our Regular Mentoring Package offers essential support for individuals seeking guidance on their mental health journey. With weekly personalized sessions, you'll gain practical strategies to manage stress, enhance emotional well-being, and foster resilience. Our experienced mentors will provide a listening ear and evidence-based techniques to help you navigate life's challenges and improve your overall mental wellness.",
-    "duration": 10000,
-    "price": 100000
+    "price": 100000,
+    "duration": "10000"
   },
   {
     "name": "Premium",
     "description": "Elevate your mental health journey with our Premium Mentoring Package. Enjoy the benefits of in-depth, bi-weekly sessions that delve into personalized strategies for self-discovery and growth. Our seasoned mentors will guide you through advanced techniques, tailored to your unique needs, empowering you to build a stronger foundation for emotional resilience and personal development. Experience transformative insights and lasting positive change with our Premium Package.",
-    "duration": 20000,
-    "price": 200000
+    "price": 200000,
+    "duration": "20000"
   },
   {
     "name": "VIP",
     "description": "Experience the utmost level of support and transformation with our VIP Mentoring Package. Receive intensive one-on-one sessions, customized to your evolving mental health goals, multiple times a week. Our top-tier mentors, specialized in complex emotional challenges, will provide unparalleled guidance and unwavering support. This package is designed for those committed to rapid and profound personal growth, offering a comprehensive toolkit to navigate even the most intricate aspects of your mental well-being journey.",
-    "duration": 30000,
-    "price": 300000
+    "price": 300000,
+    "duration": "30000"
   }
 ]
