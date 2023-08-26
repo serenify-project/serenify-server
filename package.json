@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand",
     "start": "nodemon app.js",
         "mu": "sequelize db:migrate:undo:all",
         "ma": "sequelize db:migrate",

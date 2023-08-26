@@ -1,11 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const packageRouter = require("../routers/packageRouter");
-const userRouter = require("../routers/userRouter");
-const paymentRouter = require("../routers/paymentRouter.js")
+const packageRouter = require("./packageRouter");
+const userRouter = require("./userRouter");
+const paymentRouter = require("./paymentRouter");
+const roomRouter = require("./roomRouter");
 
+router.use(roomRouter);
 router.use(userRouter);
 router.use(packageRouter);
-router.use(paymentRouter)
+router.use(paymentRouter);
+router.use(roomRouter);
 
 module.exports = router;
