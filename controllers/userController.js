@@ -5,13 +5,13 @@ const { User } = require("../models/");
 class userController {
   static async registerUser(req, res, next) {
     try {
-      const { username, email, password, role, birthDate, gender } = req.body;
+      const { username, email, password, birthDate, gender } = req.body;
 
       const user = await User.create({
         username,
         email,
         password,
-        role,
+        role: "mentee",
         birthDate,
         gender,
       });
@@ -25,13 +25,14 @@ class userController {
   static async loginUser(req, res, next) {
     try {
       const { email, password } = req.body;
+
       const user = await User.findOne({
         where: {
           email,
         },
       });
       if (!user) {
-        throw { name: "InvalidCredentials" };
+        throw { name: "Invalid" };
       }
       const token = generateToken({
         id: user.id,
@@ -45,30 +46,30 @@ class userController {
           role: user.role,
         });
       } else {
-        throw { name: "InvalidCredentials" };
+        throw { name: "Invalid" };
       }
     } catch (error) {
+      console.log(error, "<<<");
       next(error);
     }
   }
 
   static async editUser(req, res, next) {
     try {
-      const { userId } = req.additionalData;
-      const { username, email, password, role, birthDate, gender } = req.body;
+      const { id } = req.params;
+      const { username, email, birthDate, gender } = req.body;
 
       const editUser = await User.update(
         {
           username,
           email,
-          password: hashPassword(password),
-          role,
+          role: "mentee",
           birthDate,
           gender,
         },
         {
           where: {
-            id: userId,
+            id,
           },
         }
       );
@@ -76,7 +77,7 @@ class userController {
       if (!editUser) throw { name: "userEdit" };
 
       res.status(201).json({
-        message: `User with id ${userId} has been updated`,
+        message: `User with id ${id} has been updated`,
       });
     } catch (error) {
       next(error);
@@ -85,16 +86,16 @@ class userController {
 
   static async deleteUser(req, res, next) {
     try {
-      const { userId } = req.additionalData;
+      const { id } = req.params;
 
-      const user = await User.findByPk(userId);
+      const user = await User.findByPk(id);
 
       if (!user) {
         throw { name: "NotFound" };
       }
 
       const deleteUser = await user.destroy({
-        where: { id: userId },
+        where: { id },
       });
 
       if (deleteUser) {

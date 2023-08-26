@@ -1,5 +1,5 @@
 const errorHandler = async (err, request, response, next) => {
-  console.log(err, "err handler 888888");
+  // console.log(err, "err handler 888888");
   if (err.name === "Unauthenticated") {
     response.status(401).json({
       message: "Error Authentication",
@@ -25,7 +25,12 @@ const errorHandler = async (err, request, response, next) => {
     response.status(403).json({
       message: "Forbidden Error Authorization",
     });
-  } if (err.name === "SequelizeValidationError" || err.name === "SequelizeUniqueConstraintError" || err.name === "SequelizeDatabaseError") {
+  }
+  if (
+    err.name === "SequelizeValidationError" ||
+    err.name === "SequelizeUniqueConstraintError" ||
+    err.name === "SequelizeDatabaseError"
+  ) {
     const errors = err.errors || [];
     let messages = [];
     for (const errorMessages of errors) {
@@ -44,9 +49,13 @@ const errorHandler = async (err, request, response, next) => {
     response.status(404).json({
       message: "Error not found",
     });
+  } else if (err.name === "userEdit") {
+    response.status(404).json({
+      message: "Error not found",
+    });
   } else if (err.name == "Invalid") {
     response.status(401).json({
-      message: "error invalid username or email or password",
+      message: "Invalid email or password",
     });
   } else if (err.name === "NodemailerFail") {
     response.status(422).json({
