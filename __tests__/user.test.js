@@ -17,7 +17,7 @@ describe("login", () => {
       gender: "male",
     });
   });
-
+  //
   afterAll(async () => {
     customer = await User.destroy({
       where: {
@@ -249,7 +249,7 @@ describe("edit user", () => {
       const responseBody = response.body;
       expect(responseBody).toHaveProperty(
         "message",
-        "User with id 1 has been updated"
+        "User with id 1 has been updated",
       );
     } catch (error) {
       console.log(error);
@@ -295,7 +295,7 @@ describe("delete user", () => {
       const responseBody = response.body;
       expect(responseBody).toHaveProperty(
         "message",
-        "Your account has been deleted"
+        "Your account has been deleted",
       );
     } catch (error) {
       console.log(error);

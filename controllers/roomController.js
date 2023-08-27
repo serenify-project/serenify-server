@@ -1,6 +1,5 @@
-const DAILY_API_KEY =
-  "c46f5cc5a62a8aac8d1e260bcfde880d64ae1be9ec126c0c37155e5aecbf54b3";
-const DAILY_ROOM_URL = "https://api.daily.co/v1/rooms";
+const DAILY_API_KEY = process.env.DAILY_API_KEY;
+const DAILY_ROOM_URL = process.env.DAILY_ROOM_URL;
 const headers = {
   "Content-Type": "application/json",
   Authorization: `Bearer ${DAILY_API_KEY}`,

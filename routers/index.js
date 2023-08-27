@@ -5,8 +5,9 @@ const userRouter = require("./userRouter");
 const paymentRouter = require("./paymentRouter");
 const roomRouter = require("./roomRouter");
 const activityRouter = require("./activity");
-const MentorScheduleController = require("../controllers/mentorScheduleController");
-router.get("/ms", MentorScheduleController.getMentorSchedule);
+const scheduleRouter = require("./mentorSchedule");
+
+router.use("/schedules", scheduleRouter);
 router.use("/users", userRouter);
 router.use("/packages", packageRouter);
 router.use("/payment", paymentRouter);
