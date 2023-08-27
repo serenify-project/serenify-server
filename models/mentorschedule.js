@@ -9,9 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      MentorSchedule.hasMany(models.Activity, {
-        foreignKey: "MentorScheduleId",
-      });
+      MentorSchedule.hasMany(models.Activity);
       MentorSchedule.belongsTo(models.User, {
         foreignKey: "UserId",
       });
@@ -20,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
   MentorSchedule.init(
     {
       date: DataTypes.DATE,
-      status: DataTypes.STRING,
+      status: {
+        type: DataTypes.STRING,
+        defaultValue: "available",
+      },
       UserId: DataTypes.INTEGER,
     },
     {

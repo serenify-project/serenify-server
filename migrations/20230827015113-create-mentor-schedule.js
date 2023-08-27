@@ -14,6 +14,7 @@ module.exports = {
       },
       status: {
         type: Sequelize.STRING,
+        defaultValue: "available",
       },
       UserId: {
         type: Sequelize.INTEGER,

@@ -37,10 +37,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           notNull: {
-            msg: "Schedule is required",
+            msg: "Status is required",
           },
           notEmpty: {
-            msg: "Schedule is required",
+            msg: "Status is required",
           },
         },
       },

@@ -50,6 +50,7 @@ class UserController {
       const token = generateToken({
         id: user.id,
         email: user.email,
+        role: user.role,
       });
       if (checkPassword(password, user.password)) {
         res.status(200).json({

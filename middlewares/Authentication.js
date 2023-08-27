@@ -17,7 +17,7 @@ async function Authentication(req, res, next) {
 
     const user = await User.findOne({
       where: {
-        id: payload.id,
+        email: payload.email,
       },
     });
 
