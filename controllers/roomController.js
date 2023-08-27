@@ -21,12 +21,13 @@ class RoomController {
   }
 
   static async createRoom(req, res, next) {
+    const { v4: uuidv4 } = require("uuid");
     try {
       const response = await fetch(DAILY_ROOM_URL, {
         method: "post",
         headers,
         body: JSON.stringify({
-          name: "serenity-room",
+          name: `serenity-room-${uuidv4()}`,
           privacy: "public",
           properties: {
             start_audio_off: true,
@@ -43,7 +44,8 @@ class RoomController {
 
   static async deleteRoom(req, res, next) {
     try {
-      const response = await fetch(`${DAILY_ROOM_URL}/serenity-room`, {
+      const { name } = req.params;
+      const response = await fetch(`${DAILY_ROOM_URL}/${name}`, {
         method: "delete",
         headers,
       });

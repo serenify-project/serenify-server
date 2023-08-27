@@ -1,5 +1,5 @@
 const { Package, User } = require("../models");
-class packageController {
+class PackageController {
   static async getAllPackages(req, res, next) {
     try {
       const result = await Package.findAll({});
@@ -70,7 +70,7 @@ class packageController {
           where: {
             id,
           },
-        }
+        },
       );
 
       if (!editPackage) throw { name: "ErrorEdit" };
@@ -109,4 +109,4 @@ class packageController {
   }
 }
 
-module.exports = packageController;
+module.exports = PackageController;
