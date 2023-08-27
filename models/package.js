@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Package",
-    }
+    },
   );
   return Package;
 };

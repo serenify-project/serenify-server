@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Activity.belongsTo(models.User, { foreignKey: "UserId" });
+      Activity.belongsTo(models.MentorSchedule, {
+        foreignKey: "MentorScheduleId",
+      });
     }
   }
   Activity.init(
@@ -47,11 +50,14 @@ module.exports = (sequelize, DataTypes) => {
       UserId: {
         type: DataTypes.INTEGER,
       },
+      MentorScheduleId: {
+        type: DataTypes.INTEGER,
+      },
     },
     {
       sequelize,
       modelName: "Activity",
-    }
+    },
   );
   return Activity;
 };

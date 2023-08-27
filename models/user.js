@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.hasMany(models.Transaction, { foreignKey: "UserId" });
       User.hasMany(models.Activity, { foreignKey: "UserId" });
+      User.hasMany(models.MentorSchedule, { foreignKey: "MentorScheduleId" });
     }
   }
   User.init(
@@ -73,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "User",
-    }
+    },
   );
   User.beforeCreate((user) => {
     user.password = hashPassword(user.password);

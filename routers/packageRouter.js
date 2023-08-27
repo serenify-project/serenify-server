@@ -1,15 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const packageController = require("../controllers/packageController");
+const PackageController = require("../controllers/packageController");
 const Authentication = require("../middlewares/Authentication");
 
-router.get("/packages", packageController.getAllPackages);
-router.get("/packages/:id", packageController.getPackageById);
+router.get("/", PackageController.getAllPackages);
+router.get("/:id", PackageController.getPackageById);
 
 router.use(Authentication);
 
-router.post("/packages", packageController.addNewPackage);
-router.put("/packages/:id", packageController.editPackage);
-router.delete("/packages/:id", packageController.deletePackage);
+router.post("/", PackageController.addNewPackage);
+router.put("/:id", PackageController.editPackage);
+router.delete("/:id", PackageController.deletePackage);
 
 module.exports = router;

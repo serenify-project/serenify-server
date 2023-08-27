@@ -1,8 +1,21 @@
-const { checkPassword, hashPassword } = require("../helpers/bcrypt");
+const { checkPassword } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
 const { User } = require("../models/");
 
-class userController {
+class UserController {
+  static async getUsers(req, res, next) {
+    try {
+      const data = await User.findAll();
+      const users = data.map((user) => {
+        const { id, username, email, birthDate, role, gender } = user;
+        return { id, username, email, birthDate, role, gender };
+      });
+      res.status(200).json(users);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async registerUser(req, res, next) {
     try {
       const { username, email, password, birthDate, gender } = req.body;
@@ -71,7 +84,7 @@ class userController {
           where: {
             id,
           },
-        }
+        },
       );
 
       if (!editUser) throw { name: "userEdit" };
@@ -110,4 +123,4 @@ class userController {
   }
 }
 
-module.exports = userController;
+module.exports = UserController;
