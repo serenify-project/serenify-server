@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
         validate: {
           notNull: { msg: "Description is required" },
@@ -39,26 +39,18 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       duration: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
           notNull: { msg: "Duration is required" },
           notEmpty: { msg: "Duration is required" },
         },
       },
-      schedule: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        validate: {
-          notNull: { msg: "Schedule is required" },
-          notEmpty: { msg: "Schedule is required" },
-        },
-      },
     },
     {
       sequelize,
       modelName: "Package",
-    }
+    },
   );
   return Package;
 };

@@ -1,0 +1,50 @@
+[
+  {
+    "username": "user1",
+    "email": "user1@gmail.com",
+    "password": "123456",
+    "role": "mentee",
+    "birthDate": "2000-08-21 14:20:27.816 +0700",
+    "gender": "male"
+  },
+  {
+    "username": "Reva",
+    "email": "reva@mail.com",
+    "password": "123456",
+    "role": "mentor",
+    "birthDate": "2000-08-21 14:20:27.816 +0700",
+    "gender": "female"
+  },
+  {
+    "username": "Emon",
+    "email": "emon@mail.com",
+    "password": "123456",
+    "role": "mentor",
+    "birthDate": "2000-08-21 14:20:27.816 +0700",
+    "gender": "male"
+  },
+  {
+    "username": "Afi",
+    "email": "afi@mail.com",
+    "password": "123456",
+    "role": "mentor",
+    "birthDate": "2000-08-21 14:20:27.816 +0700",
+    "gender": "female"
+  },
+  {
+    "username": "user2",
+    "email": "user2@gmail.com",
+    "password": "123456",
+    "role": "mentee",
+    "birthDate": "2000-08-21 14:20:27.816 +0700",
+    "gender": "male"
+  },
+  {
+    "username": "user3",
+    "email": "user3@gmail.com",
+    "password": "123456",
+    "role": "mentee",
+    "birthDate": "2000-08-21 14:20:27.816 +0700",
+    "gender": "male"
+  }
+]
