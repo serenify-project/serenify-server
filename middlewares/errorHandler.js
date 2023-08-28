@@ -25,8 +25,7 @@ const errorHandler = async (err, request, response, next) => {
     response.status(403).json({
       message: "Forbidden Error Authorization",
     });
-  }
-  if (
+  } else if (
     err.name === "SequelizeValidationError" ||
     err.name === "SequelizeUniqueConstraintError" ||
     err.name === "SequelizeDatabaseError"

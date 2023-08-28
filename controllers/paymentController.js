@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 class PaymentController {
   static async initializePayment(req, res, next) {
     try {
-      //   console.log("hitted controller  <<<");
+      console.log("hitted controller  <<<");
       const { userId } = req.additionalData;
       const { packageId } = req.body;
 
@@ -18,6 +18,10 @@ class PaymentController {
       if (!packagePlan) {
         throw { name: "PxNotFound" };
       }
+
+      // res.status(201).json({
+      //   packagePlan,
+      // });
 
       const paymentIntent = await Stripe.paymentIntents.create({
         amount: packagePlan.dataValues.price,

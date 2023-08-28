@@ -4,4 +4,4 @@ const router = require("express").Router();
 
 router.post("/init", Authentication, PaymentController.initializePayment);
 router.post("/success", Authentication, PaymentController.successPayment);
-module.exports = router 
+module.exports = router;
