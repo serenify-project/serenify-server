@@ -35,7 +35,8 @@ class UserController {
 
   static async registerUser(req, res, next) {
     try {
-      const { username, email, password, birthDate, gender } = req.body;
+      const { username, email, password, birthDate, gender, userFirebaseId } =
+        req.body;
 
       const user = await User.create({
         username,
@@ -44,6 +45,7 @@ class UserController {
         role: "mentee",
         birthDate,
         gender,
+        userFirebaseId,
       });
 
       res.status(201).json({
@@ -105,7 +107,7 @@ class UserController {
           where: {
             id,
           },
-        }
+        },
       );
 
       if (!editUser) throw { name: "userEdit" };
