@@ -4,16 +4,12 @@ const { Package, User } = require("../models");
 const { generateToken } = require("../helpers/jwt");
 
 describe("testing package", () => {
-  const packages = require("./db_test/dataPackage.json");
-  const users = require("./db_test/dataUser.json");
-
-  let user;
-  let token;
+  const packages = require("./db_test/packages.json");
+  const users = require("./db_test/users.json");
 
   beforeAll(async () => {
     try {
-      // await User.bulkCreate(users);
-      // user = await User.findByPk(2);
+      await User.bulkCreate(users);
       await Package.bulkCreate(packages);
     } catch (err) {
       console.log(err);
@@ -28,29 +24,8 @@ describe("testing package", () => {
       force: true,
     });
     // await Movie.sync({ force: true });
-    // await User.sync({ force: true });
+    await User.sync({ force: true });
     // await Movie.sync({ force: true });
-  });
-
-  it("add package", async () => {
-    const response = await request(app)
-      .post(`/packages`)
-      .send({
-        name: "package testing",
-        description: "Ini description untuk package testing",
-        price: 10000,
-        duration: 10,
-      })
-      .set(
-        "access_token",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMkBnbWFpbC5jb20iLCJyb2xlIjoibWVudG9yIiwiaWF0IjoxNjkzMTA0MTMxLCJleHAiOjE2OTMxOTA1MzF9.SEiaCaLTtZkBEwB3--pwlqRXhzbSsMMIgTt0jE1HYg0",
-      )
-      .set("Accept", "application/json");
-
-    console.log(response.body, "<< response status nya");
-
-    expect(response.status).toBe(201);
-    expect(response.body.message).toHaveProperty("name", "package testing");
   });
 
   it("response all packages with json", async () => {
@@ -76,5 +51,68 @@ describe("testing package", () => {
     expect(response.status).toEqual(200);
     const responseBody = response.body;
     expect(responseBody).toHaveProperty("name", "Regular");
+  });
+
+  it("add package", async () => {
+    const response = await request(app)
+      .post(`/packages`)
+      .send({
+        name: "package testing",
+        description: "Ini description untuk package testing",
+        price: 10000,
+        duration: 10,
+      })
+      .set(
+        "access_token",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJyZXZhQG1haWwuY29tIiwicm9sZSI6Im1lbnRvciIsImlhdCI6MTY5MzE5OTM1NywiZXhwIjoxNjkzMjg1NzU3fQ.k9jSqfjp-qq9bPAh1hg1MlICQyg8gvCiQjy48wnHLq4"
+      )
+      .set("Accept", "application/json");
+
+    console.log(response.body, "<< response status nya");
+
+    expect(response.status).toBe(201);
+    expect(response.body.message).toHaveProperty("name", "package testing");
+  });
+
+  it("edit package", async () => {
+    const response = await request(app)
+      .put(`/packages/1`)
+      .send({
+        name: "package testing edit",
+        description: "Ini description untuk package testing edit",
+        price: 10000,
+        duration: 10,
+      })
+      .set(
+        "access_token",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJyZXZhQG1haWwuY29tIiwicm9sZSI6Im1lbnRvciIsImlhdCI6MTY5MzE5OTM1NywiZXhwIjoxNjkzMjg1NzU3fQ.k9jSqfjp-qq9bPAh1hg1MlICQyg8gvCiQjy48wnHLq4"
+      )
+      .set("Accept", "application/json");
+
+    console.log(response.body, "<< response status nya");
+
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty(
+      "message",
+      "Data with id 1 has been updated"
+    );
+  });
+
+  it("delete package", async () => {
+    const response = await request(app)
+      .delete(`/packages/1`)
+      .set(
+        "access_token",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJyZXZhQG1haWwuY29tIiwicm9sZSI6Im1lbnRvciIsImlhdCI6MTY5MzE5OTM1NywiZXhwIjoxNjkzMjg1NzU3fQ.k9jSqfjp-qq9bPAh1hg1MlICQyg8gvCiQjy48wnHLq4"
+      )
+      .set("Accept", "application/json");
+
+    console.log(response.body, "<< response status nya");
+
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty(
+      "message",
+      "Package with id 1 has been deleted"
+    );
   });
 });

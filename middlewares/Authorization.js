@@ -1,7 +1,7 @@
 const { User } = require("../models");
 const { getPayload } = require("../helpers/jwt");
 
-const authorization = async (req, res, next) => {
+const Authorization = async (req, res, next) => {
   try {
     console.log(req.headers.access_token, "<< masuk sini");
     if (!req.headers.access_token) {
@@ -24,4 +24,4 @@ const authorization = async (req, res, next) => {
   }
 };
 
-module.exports = authorization;
+module.exports = Authorization;

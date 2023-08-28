@@ -77,7 +77,6 @@ class UserController {
         {
           username,
           email,
-          role: "mentee",
           birthDate,
           gender,
         },
@@ -85,7 +84,7 @@ class UserController {
           where: {
             id,
           },
-        },
+        }
       );
 
       if (!editUser) throw { name: "userEdit" };
@@ -113,9 +112,9 @@ class UserController {
       });
 
       if (deleteUser) {
-        res.status(200).json({
-          statusCode: 200,
-          message: "Your account has been deleted",
+        res.status(201).json({
+          statusCode: 201,
+          message: `User with id ${id} has been deleted`,
         });
       }
     } catch (error) {
