@@ -238,8 +238,8 @@ describe("edit user", () => {
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJyZXZhQG1haWwuY29tIiwicm9sZSI6Im1lbnRvciIsImlhdCI6MTY5MzIwMjY5MiwiZXhwIjoxNjkzMjg5MDkyfQ.ZzcW34DrZYRq7rGs-IyDQ3oeqo8LmWk3xSLUmb9gYmU"
         );
 
-      console.log(response.status, "<< status");
-      console.log(response.body, "<< body");
+      // console.log(response.status, "<< status");
+      // console.log(response.body, "<< body");
 
       expect(response.status).toEqual(201);
       expect(response.body).toHaveProperty(
