@@ -16,6 +16,23 @@ class UserController {
     }
   }
 
+  static async getUserById(req, res, next) {
+    try {
+      const data = await User.findByPk(req.params.id);
+      console.log(data);
+      res.status(200).json({
+        id: data.id,
+        username: data.username,
+        email: data.email,
+        birthDate: data.birthDate,
+        role: data.role,
+        gender: data.gender,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async registerUser(req, res, next) {
     try {
       const { username, email, password, birthDate, gender } = req.body;
@@ -56,6 +73,7 @@ class UserController {
         res.status(200).json({
           statusCode: 200,
           access_token: token,
+          id: user.id,
           email: user.email,
           role: user.role,
         });
@@ -85,7 +103,7 @@ class UserController {
           where: {
             id,
           },
-        },
+        }
       );
 
       if (!editUser) throw { name: "userEdit" };
