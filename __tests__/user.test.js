@@ -212,90 +212,79 @@ describe("register", () => {
 });
 
 describe("edit user", () => {
-  let customer;
+  const users = require("./db_test/users.json");
+
   beforeAll(async () => {
-    customer = await User.create({
-      username: "username",
-      email: "logintest@gmail.com",
-      password: "123456",
-      role: "mentor",
-      birthDate: "2000-08-21 14:20:27.816 +0700",
-      gender: "male",
-    });
+    try {
+      await User.bulkCreate(users);
+    } catch (err) {
+      console.log(err, "<<<< masuk ke error beforeAll");
+    }
   });
 
   afterAll(async () => {
-    customer = await User.destroy({
-      where: {
-        email: "logintest@gmail.com",
-      },
-    });
+    await User.sync({ force: true });
   });
 
   it("response with json", async () => {
     try {
+      const id = 1;
+      console.log(id, "<< id di user test");
       const response = await request(app)
-        .put("/users")
+        .put(`/users/${id}`)
         .set("Accept", "application/json")
-        .send({ email: "logintest@gmail.com", password: "123456" });
+        .set(
+          "access_token",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJyZXZhQG1haWwuY29tIiwicm9sZSI6Im1lbnRvciIsImlhdCI6MTY5MzIwMjY5MiwiZXhwIjoxNjkzMjg5MDkyfQ.ZzcW34DrZYRq7rGs-IyDQ3oeqo8LmWk3xSLUmb9gYmU"
+        );
 
-      const token = generateToken({
-        id: customer.id,
-        email: customer.email,
-        role: customer.role,
-      });
+      // console.log(response.status, "<< status");
+      // console.log(response.body, "<< body");
 
       expect(response.status).toEqual(201);
-      const responseBody = response.body;
-      expect(responseBody).toHaveProperty(
+      expect(response.body).toHaveProperty(
         "message",
-        "User with id 1 has been updated",
+        `User with id ${id} has been updated`
       );
     } catch (error) {
-      console.log(error);
+      console.log(error, "<<< ini error nya");
     }
   });
 });
 
 describe("delete user", () => {
-  let customer;
+  const users = require("./db_test/users.json");
+
   beforeAll(async () => {
-    customer = await User.create({
-      username: "username",
-      email: "logintest@gmail.com",
-      password: "123456",
-      role: "mentor",
-      birthDate: "2000-08-21 14:20:27.816 +0700",
-      gender: "male",
-    });
+    try {
+      await User.bulkCreate(users);
+    } catch (err) {
+      console.log(err, "<<<< masuk ke error beforeAll");
+    }
   });
 
   afterAll(async () => {
-    customer = await User.destroy({
-      where: {
-        email: "logintest@gmail.com",
-      },
-    });
+    await User.sync({ force: true });
   });
 
   it("response with json", async () => {
     try {
+      const id = 1;
       const response = await request(app)
-        .post("/users/login")
+        .delete(`/users/${id}`)
         .set("Accept", "application/json")
-        .send({ email: "logintest@gmail.com", password: "123456" });
+        .set(
+          "access_token",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJyZXZhQG1haWwuY29tIiwicm9sZSI6Im1lbnRvciIsImlhdCI6MTY5MzIwMjY5MiwiZXhwIjoxNjkzMjg5MDkyfQ.ZzcW34DrZYRq7rGs-IyDQ3oeqo8LmWk3xSLUmb9gYmU"
+        );
 
-      const token = generateToken({
-        id: customer.id,
-        email: customer.email,
-        role: customer.role,
-      });
+      console.log(response.body, "<<< response body");
 
       expect(response.status).toEqual(201);
       const responseBody = response.body;
       expect(responseBody).toHaveProperty(
         "message",
-        "Your account has been deleted",
+        `User with id ${id} has been deleted`
       );
     } catch (error) {
       console.log(error);

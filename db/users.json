@@ -30,5 +30,21 @@
     "role": "mentor",
     "birthDate": "2000-08-21 14:20:27.816 +0700",
     "gender": "female"
+  },
+  {
+    "username": "user2",
+    "email": "user2@gmail.com",
+    "password": "123456",
+    "role": "mentee",
+    "birthDate": "2000-08-21 14:20:27.816 +0700",
+    "gender": "male"
+  },
+  {
+    "username": "user3",
+    "email": "user3@gmail.com",
+    "password": "123456",
+    "role": "mentee",
+    "birthDate": "2000-08-21 14:20:27.816 +0700",
+    "gender": "male"
   }
 ]

@@ -70,7 +70,7 @@ class PackageController {
           where: {
             id,
           },
-        },
+        }
       );
 
       if (!editPackage) throw { name: "ErrorEdit" };
@@ -100,8 +100,8 @@ class PackageController {
 
       if (!destroyed) throw { name: "ErrorDelete" };
 
-      res.status(200).json({
-        message: `${result.dataValues.name} success to delete`,
+      res.status(201).json({
+        message: `Package with id ${result.dataValues.id} has been deleted`,
       });
     } catch (err) {
       next(err);

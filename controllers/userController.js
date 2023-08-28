@@ -46,7 +46,10 @@ class UserController {
         gender,
       });
 
-      res.status(201).json({ id: user.id, email: user.email });
+      res.status(201).json({
+        id: user.id,
+        email: user.email,
+      });
     } catch (error) {
       next(error);
     }
@@ -95,7 +98,6 @@ class UserController {
         {
           username,
           email,
-          role: "mentee",
           birthDate,
           gender,
         },
@@ -131,9 +133,9 @@ class UserController {
       });
 
       if (deleteUser) {
-        res.status(200).json({
-          statusCode: 200,
-          message: "Your account has been deleted",
+        res.status(201).json({
+          statusCode: 201,
+          message: `User with id ${id} has been deleted`,
         });
       }
     } catch (error) {

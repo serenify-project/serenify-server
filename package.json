@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand",
+    "test:coverage": "jest --coverage",
     "start": "nodemon app.js",
     "mu": "sequelize db:migrate:undo:all",
     "ma": "sequelize db:migrate",
