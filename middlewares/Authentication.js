@@ -9,9 +9,10 @@ async function Authentication(req, res, next) {
 
     if (!access_token) throw { name: "jwtNotFound" };
 
+    console.log(access_token, "<<< access token");
     const payload = getPayload(access_token);
 
-    // console.log(payload, "<<< payload");
+    console.log(payload, "<<< payload");
 
     if (!payload) throw { name: "JsonWebTokenError" };
 
