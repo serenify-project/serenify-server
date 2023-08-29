@@ -82,11 +82,8 @@ class UserController {
           email: user.email,
           role: user.role,
         });
-      } else {
-        throw { name: "Invalid" };
       }
     } catch (error) {
-      console.log(error, "<<<");
       next(error);
     }
   }

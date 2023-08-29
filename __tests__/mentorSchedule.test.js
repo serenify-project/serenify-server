@@ -2,24 +2,20 @@ const request = require("supertest");
 const app = require("../app");
 const { MentorSchedule, User, Package } = require("../models");
 const { generateToken } = require("../helpers/jwt");
-const { use } = require("../routers");
+const mentorschedule = require("../models/mentorschedule");
 
 describe("MentorScheduleController", () => {
   // Test data
   const users = require("./db_test/users.json");
   const packages = require("./db_test/packages.json");
   const mentorSchedules = require("./db_test/mentorSchedule.json");
-  let user;
   const testMentorSchedule = {
     date: new Date("2023-08-27"),
   };
 
-  let createdMentorScheduleId;
-
   beforeAll(async () => {
     try {
       await User.bulkCreate(users);
-      // user = await User.findOne({ where: { email: "emon@mail.com" } });
       await Package.bulkCreate(packages);
       await MentorSchedule.bulkCreate(mentorSchedules);
     } catch (err) {
@@ -37,84 +33,110 @@ describe("MentorScheduleController", () => {
     }
   });
 
-  it("should get a list of mentor schedules", async () => {
-    const response = await request(app).get("/schedules");
-    expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
+  describe("GET /schedules", () => {
+    it("should get a list of mentor schedules", async () => {
+      const response = await request(app).get("/schedules");
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+    });
   });
 
-  it("should create a new mentor schedule", async () => {
-    const selected_user = await User.findOne({
-      where: { email: "emon@mail.com" },
-    });
-    // console.log(selected_user.id, 1212);
-    let token = generateToken({
-      id: selected_user.id,
-      email: selected_user.email,
-      role: selected_user.role,
-    });
+  describe("POST /schedules", () => {
+    it("should create a new mentor schedule", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "emon@mail.com" },
+      });
+      let token = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
 
-    const response = await request(app)
-      .post("/schedules")
-      .send(testMentorSchedule)
-      .set("access_token", token)
-      .set("Accept", "application/json");
-    console.log(response);
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty("date", "2023-08-27T00:00:00.000Z");
+      const response = await request(app)
+        .post("/schedules")
+        .send(testMentorSchedule)
+        .set("access_token", token)
+        .set("Accept", "application/json");
+
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty("date", "2023-08-27T00:00:00.000Z");
+    });
   });
 
-  // it("should update mentor schedule status", async () => {
-  //   const selected_user = await User.findOne({
-  //     where: { email: "emon@mail.com" },
-  //   });
+  describe("PATCH /schedules/:id", () => {
+    it("should patch a mentor schedule's status", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "emon@mail.com" },
+      });
+      let token = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
 
-  //   let token = generateToken({
-  //     id: selected_user.id,
-  //     email: selected_user.email,
-  //     role: selected_user.role,
-  //   });
-  //   // First, create a test mentor schedule
-  //   const createResponse = await request(app)
-  //     .post(`/schedules/`)
-  //     .send(testMentorSchedule)
-  //     .set("access_token", token)
-  //     .set("Accept", "application/json");
+      const createResponse = await request(app)
+        .post("/schedules")
+        .send(testMentorSchedule)
+        .set("access_token", token)
+        .set("Accept", "application/json");
 
-  //   const response = await request(app)
-  //     .patch(`/schedules/${createResponse.body.id}`)
-  //     .send()
-  //     .set("access_token", token)
-  //     .set("Accept", "application/json");
+      const newStatus = {
+        status: "unavailable"
+      };
 
-  //   expect(response.status).toBe(200);
-  //   expect(response.body).toHaveProperty("message", "status updated");
-  // });
+      // Update the schedule
+      const updateSchedule = await MentorSchedule.update(newStatus, {
+        where: {
+          id: createResponse._body.id
+        }
+      }); // [1]
 
-  it("should delete a mentor schedule", async () => {
-    const selected_user = await User.findOne({
-      where: { email: "emon@mail.com" },
+      // Fetch the updated schedule
+      const fetchUpdatedSchedule = await MentorSchedule.findOne({
+        where: {
+          id: createResponse._body.id
+        }
+      });
+
+      const patchResponse = await request(app)
+        .patch(`/schedules/${fetchUpdatedSchedule.dataValues.id}`)
+        .send({ status: fetchUpdatedSchedule.dataValues.status })
+        .set("access_token", token)
+        .set("Accept", "application/json");
+
+      expect(patchResponse.status).toBe(200);
+      expect(patchResponse.body).toHaveProperty("message", "status updated");
     });
+  });
 
-    let token = generateToken({
-      id: selected_user.id,
-      email: selected_user.email,
-      role: selected_user.role,
+
+
+  describe("DELETE /schedules/:id", () => {
+    it("should delete a mentor schedule", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "emon@mail.com" },
+      });
+
+      let token = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const createResponse = await request(app)
+        .post("/schedules")
+        .send(testMentorSchedule)
+        .set("access_token", token)
+        .set("Accept", "application/json");
+
+      const response = await request(app)
+        .delete(`/schedules/${createResponse.body.id}`)
+        .send()
+        .set("access_token", token)
+        .set("Accept", "application/json");
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("message", "success to delete");
     });
-
-    const createResponse = await request(app)
-      .post("/schedules")
-      .send(testMentorSchedule)
-      .set("access_token", token)
-      .set("Accept", "application/json");
-
-    const response = await request(app)
-      .delete(`/schedules/${createResponse.body.id}`)
-      .send()
-      .set("access_token", token)
-      .set("Accept", "application/json");
-
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("message", "success to delete");
   });
 });

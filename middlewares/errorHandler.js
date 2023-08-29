@@ -5,7 +5,6 @@ const errorHandler = async (err, request, response, next) => {
       message: "Error Authentication",
     });
   } else if (err.name === "JsonWebTokenError" || err.name === "jwtNotFound") {
-    //by default Jsonnya kecil
     response.status(401).json({
       message: "Error Authentication",
     });
