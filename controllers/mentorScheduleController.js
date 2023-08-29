@@ -36,14 +36,18 @@ class MentorScheduleController {
   static async patchMentorSchedule(req, res, next) {
     try {
       const { id } = req.params;
-      const scheduleFound = await MentorSchedule.findOne({ where: id });
+
+      const scheduleFound = await MentorSchedule.findOne({ where: { id } });
+
       if (!scheduleFound) throw { name: "NotFound" };
-      const newStatus = await MentorSchedule.update({
-        status: "unavailable" ? "availabele" : "unavailable",
-        where: {
-          id,
-        },
-      });
+
+      const updatedStatus = scheduleFound.status === "available" ? "unavailable" : "available";
+
+      await MentorSchedule.update(
+        { status: updatedStatus },
+        { where: { id } }
+      );
+
       res.status(200).json({ message: "status updated" });
     } catch (err) {
       next(err);
@@ -58,8 +62,6 @@ class MentorScheduleController {
           id,
         },
       });
-
-      console.log(result);
 
       const destroyed = await MentorSchedule.destroy({ where: { id } });
 
