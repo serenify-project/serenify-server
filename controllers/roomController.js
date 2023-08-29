@@ -20,13 +20,13 @@ class RoomController {
   }
 
   static async createRoom(req, res, next) {
-    const { v4: uuidv4 } = require("uuid");
+    // const { v4: uuidv4 } = require("uuid");
     try {
       const response = await fetch(DAILY_ROOM_URL, {
         method: "post",
         headers,
         body: JSON.stringify({
-          name: `serenity-room-${uuidv4()}`,
+          name: `serenity-room-${Math.floor(Math.random() * 10000)}`,
           privacy: "public",
           properties: {
             start_audio_off: true,
