@@ -1,6 +1,6 @@
 const { checkPassword } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
-const { User } = require("../models/");
+const { User, Transaction, Package } = require("../models/");
 
 class UserController {
   static async getUsers(req, res, next) {
@@ -142,6 +142,58 @@ class UserController {
       }
     } catch (error) {
       next(error);
+    }
+  }
+
+  static async cekUserTransaction(req, res, next) {
+    try {
+      const { userId } = req.additionalData;
+      console.log(userId, 11);
+      const data = await User.findByPk(userId, {
+        include: {
+          model: Transaction,
+          where: {
+            status: "success",
+          },
+          order: [["createdAt", "DESC"]],
+          include: {
+            model: Package,
+          },
+        },
+      });
+      if (data.Transactions.length === 0) {
+        throw { name: "NotFound" };
+      }
+
+      const lastTransactionUser = data.Transactions[0];
+      // Get createdAt
+      let today = new Date();
+      let createdAt = lastTransactionUser.createdAt;
+
+      // Calculate one month
+      const oneMonth = new Date(createdAt);
+      oneMonth.setMonth(createdAt.getMonth() + 1);
+
+      // Calculate one year
+      const oneYear = new Date(createdAt);
+      oneYear.setFullYear(createdAt.getFullYear() + 1);
+      console.log(oneMonth, 111);
+      let enrollStatus = true;
+      if (
+        lastTransactionUser.Package.duration === "month" &&
+        today > oneMonth
+      ) {
+        enrollStatus = false;
+      } else if (
+        lastTransactionUser.Package.duration === "year" &&
+        today > oneYear
+      ) {
+        enrollStatus = false;
+      }
+      console.log(lastTransactionUser.Package.duration);
+      res.status(200).json(enrollStatus);
+    } catch (err) {
+      next(err);
     }
   }
 }
