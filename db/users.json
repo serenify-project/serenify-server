@@ -1,7 +1,7 @@
 [
   {
-    "username": "user1",
-    "email": "user1@gmail.com",
+    "username": "Yanto",
+    "email": "yanto@mail.com",
     "password": "123456",
     "role": "mentee",
     "birthDate": "2000-08-21 14:20:27.816 +0700",
@@ -32,16 +32,16 @@
     "gender": "female"
   },
   {
-    "username": "user2",
-    "email": "user2@gmail.com",
+    "username": "Raisa",
+    "email": "raisa@mail.com",
     "password": "123456",
     "role": "mentee",
     "birthDate": "2000-08-21 14:20:27.816 +0700",
     "gender": "male"
   },
   {
-    "username": "user3",
-    "email": "user3@gmail.com",
+    "username": "Amir",
+    "email": "amir@gmail.com",
     "password": "123456",
     "role": "mentee",
     "birthDate": "2000-08-21 14:20:27.816 +0700",
