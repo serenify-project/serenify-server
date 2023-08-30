@@ -56,6 +56,7 @@ describe("MentorScheduleController", () => {
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
     });
+
   });
 
   describe("POST /schedules", () => {
