@@ -30,5 +30,13 @@
     "role": "mentor",
     "birthDate": "2000-08-21 14:20:27.816 +0700",
     "gender": "female"
+  },
+  {
+    "username": "Kongz",
+    "email": "kongz@mail.com",
+    "password": "123456",
+    "role": "mentor",
+    "birthDate": "2000-08-21 14:20:27.816 +0700",
+    "gender": "female"
   }
 ]

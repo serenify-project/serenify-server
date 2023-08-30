@@ -16,7 +16,8 @@ const errorHandler = async (err, request, response, next) => {
     response.status(404).json({
       message: "Transaction not found",
     });
-  } else if (err.name === "PxNotFound") {
+  }
+  else if (err.name === "PxNotFound") {
     response.status(404).json({
       message: "Package not found",
     });
@@ -35,6 +36,10 @@ const errorHandler = async (err, request, response, next) => {
       messages.push(errorMessages.message);
     }
     response.status(400).json({ message: messages });
+  } else if (err.name === "dateRequired") {
+    response.status(400).json({
+      message: "Date is required",
+    });
   } else if (err.name === "ErrorData") {
     response.status(404).json({
       message: "Error not found",

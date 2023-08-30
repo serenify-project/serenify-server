@@ -9,15 +9,11 @@ async function Authentication(req, res, next) {
 
     const payload = getPayload(access_token);
 
-    if (!payload) throw { name: "JsonWebTokenError" };
-
     const user = await User.findOne({
       where: {
         email: payload.email,
       },
     });
-
-    if (!user) throw { name: "NotFound" };
 
     req.additionalData = {
       userId: user.id,

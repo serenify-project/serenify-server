@@ -3,7 +3,7 @@ const app = require("../app");
 const { User } = require("../models");
 const { generateToken } = require("../helpers/jwt");
 
-jest.mock("node-fetch"); // Mock node-fetch module
+// jest.mock("node-fetch"); // Mock node-fetch module
 
 describe("Room Controller", () => {
     // Test data
@@ -36,7 +36,7 @@ describe("Room Controller", () => {
             role: selected_user.role,
         });
 
-        require("node-fetch").mockResolvedValue({
+        jest.fn().mockResolvedValue({
             json: jest.fn().mockResolvedValue([]), // Empty array for simplicity
         });
 
@@ -60,7 +60,7 @@ describe("Room Controller", () => {
             role: selected_user.role,
         });
 
-        require("node-fetch").mockResolvedValue({
+        jest.fn().mockResolvedValue({
             json: jest.fn().mockResolvedValue({}),
         });
 
@@ -83,7 +83,7 @@ describe("Room Controller", () => {
             role: selected_user.role,
         });
 
-        require("node-fetch").mockResolvedValue({
+        jest.fn().mockResolvedValue({
             json: jest.fn().mockResolvedValue({}),
         });
 
