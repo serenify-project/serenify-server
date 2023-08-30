@@ -19,10 +19,6 @@ class PaymentController {
         throw { name: "PxNotFound" };
       }
 
-      // res.status(201).json({
-      //   packagePlan,
-      // });
-
       const paymentIntent = await Stripe.paymentIntents.create({
         amount: packagePlan.dataValues.price,
         currency: "sgd",
@@ -39,7 +35,6 @@ class PaymentController {
         paymentIntent,
       });
     } catch (error) {
-      console.log(error, "error payment");
       next(error);
     }
   }
@@ -51,7 +46,7 @@ class PaymentController {
       const packagePlan = await Package.findByPk(packageId);
 
       if (!packagePlan) {
-        throw { name: "PackageNotFound" };
+        throw { name: "PxNotFound" };
       }
 
       const orderId = `${Date.now()}-${uuidv4()}`;

@@ -111,8 +111,6 @@ class UserController {
         },
       );
 
-      if (!editUser) throw { name: "userEdit" };
-
       res.status(201).json({
         message: `User with id ${id} has been updated`,
       });
