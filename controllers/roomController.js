@@ -15,7 +15,7 @@ class RoomController {
       const rooms = await response.json();
       res.status(200).json(rooms);
     } catch (err) {
-      console.log(err);
+      next(err);
     }
   }
 
@@ -37,7 +37,7 @@ class RoomController {
       const newRoom = await response.json();
       res.status(201).json(newRoom);
     } catch (err) {
-      console.log(err);
+      next(err);
     }
   }
 
@@ -51,7 +51,7 @@ class RoomController {
       const deletedRoom = await response.json();
       res.status(200).json(deletedRoom);
     } catch (err) {
-      console.log(err);
+      next(err);
     }
   }
 }

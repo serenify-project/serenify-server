@@ -18,12 +18,7 @@ class UserController {
 
   static async getUserById(req, res, next) {
     try {
-      const data = await User.findByPk(req.params.id);
-
-      if (!data) {
-        throw { name: 'NotFound' }
-      }
-
+      const data = await User.findByPk(req.additionalData.userId);
       res.status(200).json({
         id: data.id,
         username: data.username,
@@ -44,7 +39,7 @@ class UserController {
 
       const user = await User.create({
         username,
-        email,
+        email: email.toLowerCase(),
         password,
         role: "mentee",
         birthDate,
@@ -67,7 +62,7 @@ class UserController {
 
       const user = await User.findOne({
         where: {
-          email,
+          email: email.toLowerCase(),
         },
       });
       if (!user) {
@@ -75,7 +70,7 @@ class UserController {
       }
       const token = generateToken({
         id: user.id,
-        email: user.email,
+        email: user.email.toLowerCase(),
         role: user.role,
       });
       if (checkPassword(password, user.password)) {
@@ -94,13 +89,11 @@ class UserController {
 
   static async editUser(req, res, next) {
     try {
-      const { id } = req.params;
-      const { username, email, birthDate, gender } = req.body;
-
+      const { userId: id } = req.additionalData;
+      const { username, birthDate, gender } = req.body;
       const editUser = await User.update(
         {
           username,
-          email,
           birthDate,
           gender,
         },
@@ -110,6 +103,8 @@ class UserController {
           },
         },
       );
+
+      if (!editUser) throw { name: "userEdit" };
 
       res.status(201).json({
         message: `User with id ${id} has been updated`,
@@ -147,7 +142,7 @@ class UserController {
   static async cekUserTransaction(req, res, next) {
     try {
       const { userId } = req.additionalData;
-      console.log(userId, 11);
+
       // const data = await User.findByPk(userId, {});
       const data = await Transaction.findOne({
         where: {
@@ -174,7 +169,7 @@ class UserController {
       // Calculate one year
       const oneYear = new Date(createdAt);
       oneYear.setFullYear(createdAt.getFullYear() + 1);
-      console.log(oneMonth, 111);
+
       let enrollStatus = true;
       if (
         lastTransactionUser.Package.duration === "month" &&
@@ -187,7 +182,7 @@ class UserController {
       ) {
         enrollStatus = false;
       }
-      console.log(lastTransactionUser.Package.duration);
+
       res.status(200).json(enrollStatus);
     } catch (err) {
       next(err);
