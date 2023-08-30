@@ -12,6 +12,9 @@ class MentorScheduleController {
           exclude: ["createdAt", "updatedAt"],
         },
       });
+
+      if (mentorSchedules.length === 0) throw { name: "NotFound" };
+
       res.status(200).json(mentorSchedules);
     } catch (err) {
       next(err);
@@ -23,10 +26,13 @@ class MentorScheduleController {
       const { date } = req.body;
       const { userId: UserId } = req.additionalData;
 
+      if (!date) throw { name: "dateRequired" };
+
       const newSchedule = await MentorSchedule.create({
         date,
         UserId,
       });
+
       res.status(201).json(newSchedule);
     } catch (err) {
       next(err);
@@ -36,14 +42,16 @@ class MentorScheduleController {
   static async patchMentorSchedule(req, res, next) {
     try {
       const { id } = req.params;
-      const scheduleFound = await MentorSchedule.findOne({ where: id });
+
+      const scheduleFound = await MentorSchedule.findOne({ where: { id } });
+
       if (!scheduleFound) throw { name: "NotFound" };
-      const newStatus = await MentorSchedule.update({
-        status: "unavailable" ? "availabele" : "unavailable",
-        where: {
-          id,
-        },
-      });
+
+      const updatedStatus =
+        scheduleFound.status === "available" ? "unavailable" : "available";
+
+      await MentorSchedule.update({ status: updatedStatus }, { where: { id } });
+
       res.status(200).json({ message: "status updated" });
     } catch (err) {
       next(err);
@@ -59,11 +67,9 @@ class MentorScheduleController {
         },
       });
 
-      console.log(result);
+      if (!result) throw { name: "NotFound" };
 
       const destroyed = await MentorSchedule.destroy({ where: { id } });
-
-      if (!destroyed) throw { name: "ErrorDelete" };
 
       res.status(200).json({
         message: `success to delete`,

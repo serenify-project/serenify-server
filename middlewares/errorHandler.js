@@ -5,17 +5,12 @@ const errorHandler = async (err, request, response, next) => {
       message: "Error Authentication",
     });
   } else if (err.name === "JsonWebTokenError" || err.name === "jwtNotFound") {
-    //by default Jsonnya kecil
     response.status(401).json({
       message: "Error Authentication",
     });
   } else if (err.name === "NotFound") {
     response.status(404).json({
       message: "Data not found",
-    });
-  } else if (err.name === "TxNotFound") {
-    response.status(404).json({
-      message: "Transaction not found",
     });
   } else if (err.name === "PxNotFound") {
     response.status(404).json({
@@ -25,8 +20,7 @@ const errorHandler = async (err, request, response, next) => {
     response.status(403).json({
       message: "Forbidden Error Authorization",
     });
-  }
-  if (
+  } else if (
     err.name === "SequelizeValidationError" ||
     err.name === "SequelizeUniqueConstraintError" ||
     err.name === "SequelizeDatabaseError"
@@ -37,30 +31,17 @@ const errorHandler = async (err, request, response, next) => {
       messages.push(errorMessages.message);
     }
     response.status(400).json({ message: messages });
-  } else if (err.name === "ErrorData") {
-    response.status(404).json({
-      message: "Error not found",
+  } else if (err.name === "dateRequired") {
+    response.status(400).json({
+      message: "Date is required",
     });
   } else if (err.name === "ErrorDelete") {
-    response.status(404).json({
-      message: "Error not found",
-    });
-  } else if (err.name === "ErrorEdit") {
-    response.status(404).json({
-      message: "Error not found",
-    });
-  } else if (err.name === "userEdit") {
     response.status(404).json({
       message: "Error not found",
     });
   } else if (err.name == "Invalid") {
     response.status(401).json({
       message: "Invalid email or password",
-    });
-  } else if (err.name === "NodemailerFail") {
-    response.status(422).json({
-      message: "Nodemailer failed to send the email",
-      error: err.message, // Include the actual error message from Nodemailer
     });
   } else {
     response.status(500).json({

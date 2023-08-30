@@ -1,6 +1,6 @@
 const { checkPassword } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
-const { User } = require("../models/");
+const { User, Transaction, Package } = require("../models/");
 
 class UserController {
   static async getUsers(req, res, next) {
@@ -18,8 +18,7 @@ class UserController {
 
   static async getUserById(req, res, next) {
     try {
-      const data = await User.findByPk(req.params.id);
-      console.log(data);
+      const data = await User.findByPk(req.additionalData.userId);
       res.status(200).json({
         id: data.id,
         username: data.username,
@@ -35,15 +34,17 @@ class UserController {
 
   static async registerUser(req, res, next) {
     try {
-      const { username, email, password, birthDate, gender } = req.body;
+      const { username, email, password, birthDate, gender, userFirebaseId } =
+        req.body;
 
       const user = await User.create({
         username,
-        email,
+        email: email.toLowerCase(),
         password,
         role: "mentee",
         birthDate,
         gender,
+        userFirebaseId,
       });
 
       res.status(201).json({
@@ -61,7 +62,7 @@ class UserController {
 
       const user = await User.findOne({
         where: {
-          email,
+          email: email.toLowerCase(),
         },
       });
       if (!user) {
@@ -69,7 +70,7 @@ class UserController {
       }
       const token = generateToken({
         id: user.id,
-        email: user.email,
+        email: user.email.toLowerCase(),
         role: user.role,
       });
       if (checkPassword(password, user.password)) {
@@ -80,24 +81,19 @@ class UserController {
           email: user.email,
           role: user.role,
         });
-      } else {
-        throw { name: "Invalid" };
       }
     } catch (error) {
-      console.log(error, "<<<");
       next(error);
     }
   }
 
   static async editUser(req, res, next) {
     try {
-      const { id } = req.params;
-      const { username, email, birthDate, gender } = req.body;
-
+      const { userId: id } = req.additionalData;
+      const { username, birthDate, gender } = req.body;
       const editUser = await User.update(
         {
           username,
-          email,
           birthDate,
           gender,
         },
@@ -105,7 +101,7 @@ class UserController {
           where: {
             id,
           },
-        }
+        },
       );
 
       if (!editUser) throw { name: "userEdit" };
@@ -140,6 +136,56 @@ class UserController {
       }
     } catch (error) {
       next(error);
+    }
+  }
+
+  static async cekUserTransaction(req, res, next) {
+    try {
+      const { userId } = req.additionalData;
+
+      // const data = await User.findByPk(userId, {});
+      const data = await Transaction.findOne({
+        where: {
+          UserId: userId,
+        },
+        include: {
+          model: Package,
+        },
+      });
+      if (!data) {
+        res.status(200).json(false);
+        return;
+      }
+
+      const lastTransactionUser = data;
+      // Get createdAt
+      let today = new Date();
+      let createdAt = lastTransactionUser.createdAt;
+
+      // Calculate one month
+      const oneMonth = new Date(createdAt);
+      oneMonth.setMonth(createdAt.getMonth() + 1);
+
+      // Calculate one year
+      const oneYear = new Date(createdAt);
+      oneYear.setFullYear(createdAt.getFullYear() + 1);
+
+      let enrollStatus = true;
+      if (
+        lastTransactionUser.Package.duration === "month" &&
+        today > oneMonth
+      ) {
+        enrollStatus = false;
+      } else if (
+        lastTransactionUser.Package.duration === "year" &&
+        today > oneYear
+      ) {
+        enrollStatus = false;
+      }
+
+      res.status(200).json(enrollStatus);
+    } catch (err) {
+      next(err);
     }
   }
 }

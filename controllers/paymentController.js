@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 class PaymentController {
   static async initializePayment(req, res, next) {
     try {
-      //   console.log("hitted controller  <<<");
+      console.log("hitted controller  <<<");
       const { userId } = req.additionalData;
       const { packageId } = req.body;
 
@@ -35,7 +35,6 @@ class PaymentController {
         paymentIntent,
       });
     } catch (error) {
-      console.log(error, "error payment");
       next(error);
     }
   }
@@ -47,7 +46,7 @@ class PaymentController {
       const packagePlan = await Package.findByPk(packageId);
 
       if (!packagePlan) {
-        throw { name: "PackageNotFound" };
+        throw { name: "PxNotFound" };
       }
 
       const orderId = `${Date.now()}-${uuidv4()}`;

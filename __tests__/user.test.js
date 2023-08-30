@@ -1,293 +1,319 @@
 const request = require("supertest");
 const app = require("../app");
-// panggil model user
-const { User } = require("../models");
-// panggil generate token jwt
+const { User, Transaction, Package } = require("../models");
 const { generateToken } = require("../helpers/jwt");
+const { hashPassword } = require("../helpers/bcrypt");
 
-describe("login", () => {
-  let customer;
+describe("User Controller", () => {
+  // Test data
+
+  const users = require("./db_test/users.json");
+  const packages = require("./db_test/packages.json");
+  const transactions = require("./db_test/transactions.json");
+
+  // console.log(users, "DATA USERS");
+
+  users.forEach((user) => {
+    user.password = hashPassword(user.password);
+  });
+
   beforeAll(async () => {
-    customer = await User.create({
-      username: "username",
-      email: "logintest@gmail.com",
-      password: "123456",
-      role: "mentor",
-      birthDate: "2000-08-21 14:20:27.816 +0700",
-      gender: "male",
-    });
+    try {
+      await User.bulkCreate(users);
+      await Package.bulkCreate(packages);
+      await Transaction.bulkCreate(transactions);
+    } catch (err) {
+      console.log(err, 111);
+    }
   });
-  //
+
   afterAll(async () => {
-    customer = await User.destroy({
-      where: {
-        email: "logintest@gmail.com",
-      },
+    try {
+      await User.sync({ force: true });
+      await Transaction.sync({ force: true });
+      await Package.sync({ force: true });
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  describe("GET /users", () => {
+    it("should get a list of users", async () => {
+      const response = await request(app).get("/users");
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
     });
   });
 
-  it("response with json", async () => {
-    try {
+  describe("POST /users/register", () => {
+    it("should register a new user", async () => {
+      const newUser = {
+        username: "newuser",
+        email: "newuser@example.com",
+        password: "passwordtest",
+        birthDate: "2000-01-01",
+        gender: "female",
+      };
+
+      const response = await request(app).post("/users/register").send(newUser);
+
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty("id");
+      expect(response.body).toHaveProperty("email", newUser.email);
+    });
+  });
+
+  describe("POST /users/register", () => {
+    it("should not register a new user with empty username", async () => {
+      const newUser = {
+        username: "", // Empty username
+        email: "newuser@example.com",
+        password: "passwordtest",
+        birthDate: "2000-01-01",
+        gender: "female",
+      };
+
+      const response = await request(app).post("/users/register").send(newUser);
+
+      expect(response.status).toBe(400); // Expect a Bad Request status
+      expect(response.body).toHaveProperty("message");
+      expect(response.body.message).toContain("Username is required");
+    });
+  });
+
+  describe("POST /users/login", () => {
+    it("should log in an existing user", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "emon@mail.com" },
+      });
+
+      const loginData = {
+        email: selected_user.email,
+        password: "123456",
+      };
+
+      const response = await request(app).post("/users/login").send(loginData);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("access_token");
+      expect(response.body).toHaveProperty("id", selected_user.id);
+      expect(response.body).toHaveProperty("email", selected_user.email);
+      expect(response.body).toHaveProperty("role", selected_user.role);
+    });
+
+    it("should handle invalid login credentials", async () => {
+      const invalidCredentials = {
+        email: "invalid@example.com",
+        password: "invalidpassword",
+      };
+
       const response = await request(app)
         .post("/users/login")
-        .set("Accept", "application/json")
-        .send({ email: "logintest@gmail.com", password: "123456" });
+        .send(invalidCredentials);
 
-      const token = generateToken({
-        id: customer.id,
-        email: customer.email,
-        role: customer.role,
-      });
+      expect(response.status).toBe(401); // Expect Unauthorized status
+      expect(response.body).toHaveProperty(
+        "message",
+        "Invalid email or password",
+      );
+    });
 
-      expect(response.status).toEqual(200);
-      const responseBody = response.body;
-      expect(responseBody).toHaveProperty("access_token", token);
-    } catch (error) {
-      console.log(error);
-    }
-  });
+    it("should handle invalid login credentials", async () => {
+      const invalidCredentials = {
+        email: "invalid@example.com",
+        password: "invalidpassword",
+      };
 
-  it("when password invalid", async () => {
-    const response = await request(app)
-      //endpoiint
-      .post("/users/login")
-      //header
-      .set("Accept", "application/json")
-      //body
-      .send({ email: "logintest@gmail.com", password: "123458" });
+      const response = await request(app)
+        .post("/users/login")
+        .send(invalidCredentials);
 
-    console.log(response.status, "<< this status");
-
-    expect(response.status).toEqual(401);
-    const responseBody = response.body;
-    expect(responseBody).toHaveProperty("message", "Invalid email or password");
-  });
-
-  it("when email invalid", async () => {
-    const response = await request(app)
-      //endpoiint
-      .post("/users/login")
-      //header
-      .set("Accept", "application/json")
-      //body
-      .send({ email: "logintest@ail.com", password: "123456" });
-
-    console.log(response);
-
-    expect(response.status).toEqual(401);
-    const responseBody = response.body;
-    expect(responseBody).toHaveProperty("message", "Invalid email or password");
-  });
-});
-
-describe("register", () => {
-  let customer;
-
-  afterAll(async () => {
-    customer = await User.destroy({
-      where: {
-        email: "test1@gmail.com",
-      },
+      expect(response.status).toBe(401); // Expect Unauthorized status
+      expect(response.body).toHaveProperty(
+        "message",
+        "Invalid email or password",
+      );
     });
   });
 
-  it("register success", async () => {
-    const response = await request(app)
-      .post("/users/register")
-      .set("Accept", "application/json")
-      .send({
-        username: "username1",
-        email: "test1@gmail.com",
-        password: "123456",
-        role: "mentor",
-        birthDate: "2000-08-21 14:20:27.816 +0700",
-        gender: "male",
+  describe("GET /users/detail", () => {
+    it("should get a user detail", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "emon@mail.com" },
       });
 
-    // console.log(response.status, "<<<");
-
-    expect(response.status).toEqual(201);
-    const responseBody = response.body;
-    expect(responseBody).toHaveProperty("email", "test1@gmail.com");
-  });
-
-  it("when username is empty", async () => {
-    const response = await request(app)
-      .post("/users/register")
-      .set("Accept", "application/json")
-      .send({
-        username: "",
-        email: "test1@gmail.com",
-        password: "123456",
-        role: "mentor",
-        birthDate: "2000-08-21 14:20:27.816 +0700",
-        gender: "male",
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
       });
 
-    console.log(response.status, "<<<");
-
-    expect(response.status).toEqual(400);
-    const responseBody = response.body;
-    expect(responseBody).toHaveProperty("message", ["Username is required"]);
-  });
-  it("when email is empty", async () => {
-    const response = await request(app)
-      .post("/users/register")
-      .set("Accept", "application/json")
-      .send({
-        username: "username1",
-        email: "",
-        password: "123456",
-        role: "mentor",
-        birthDate: "2000-08-21 14:20:27.816 +0700",
-        gender: "male",
-      });
-
-    console.log(response.status, "<<<");
-
-    expect(response.status).toEqual(400);
-    const responseBody = response.body;
-    expect(responseBody).toHaveProperty("message", ["Email is required"]);
-  });
-
-  it("when password is empty", async () => {
-    const response = await request(app)
-      .post("/users/register")
-      .set("Accept", "application/json")
-      .send({
-        username: "username1",
-        email: "test1@gmail.com",
-        password: "",
-        role: "mentor",
-        birthDate: "2000-08-21 14:20:27.816 +0700",
-        gender: "male",
-      });
-
-    console.log(response.status, "<<<");
-
-    expect(response.status).toEqual(400);
-    const responseBody = response.body;
-    expect(responseBody).toHaveProperty("message", ["Password is required"]);
-  });
-  it("when birthDate is empty", async () => {
-    const response = await request(app)
-      .post("/users/register")
-      .set("Accept", "application/json")
-      .send({
-        username: "username1",
-        email: "test1@gmail.com",
-        password: "123456",
-        role: "mentor",
-        birthDate: "",
-        gender: "male",
-      });
-
-    console.log(response.status, "<<<");
-
-    expect(response.status).toEqual(400);
-    const responseBody = response.body;
-    expect(responseBody).toHaveProperty("message", ["Birth Date is required"]);
-  });
-  it("when gender is empty", async () => {
-    const response = await request(app)
-      .post("/users/register")
-      .set("Accept", "application/json")
-      .send({
-        username: "username1",
-        email: "test1@gmail.com",
-        password: "123456",
-        role: "mentor",
-        birthDate: "2000-08-21 14:20:27.816 +0700",
-        gender: "",
-      });
-
-    console.log(response.status, "<<<");
-
-    expect(response.status).toEqual(400);
-    const responseBody = response.body;
-    expect(responseBody).toHaveProperty("message", ["Gender is required"]);
-  });
-
-  it;
-});
-
-describe("edit user", () => {
-  const users = require("./db_test/users.json");
-
-  beforeAll(async () => {
-    try {
-      await User.bulkCreate(users);
-    } catch (err) {
-      console.log(err, "<<<< masuk ke error beforeAll");
-    }
-  });
-
-  afterAll(async () => {
-    await User.sync({ force: true });
-  });
-
-  it("response with json", async () => {
-    try {
-      const id = 1;
-      console.log(id, "<< id di user test");
       const response = await request(app)
-        .put(`/users/${id}`)
-        .set("Accept", "application/json")
-        .set(
-          "access_token",
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJyZXZhQG1haWwuY29tIiwicm9sZSI6Im1lbnRvciIsImlhdCI6MTY5MzIwMjY5MiwiZXhwIjoxNjkzMjg5MDkyfQ.ZzcW34DrZYRq7rGs-IyDQ3oeqo8LmWk3xSLUmb9gYmU"
-        );
+        .get(`/users/detail`)
+        .set("access_token", `${accessToken}`);
 
-      console.log(response.status, "<< status");
-      console.log(response.body, "<< body");
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("id", selected_user.id);
+    });
+  });
 
-      expect(response.status).toEqual(201);
+  describe("PUT /users/edit", () => {
+    it("should edit a user by ID", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "reva@mail.com" },
+      });
+
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const editedData = {
+        username: "newUsername",
+        // ... Other fields to edit
+      };
+
+      const response = await request(app)
+        .put(`/users/edit`)
+        .set("access_token", `${accessToken}`)
+        .send(editedData);
+
+      expect(response.status).toBe(201);
       expect(response.body).toHaveProperty(
         "message",
-        `User with id ${id} has been updated`
+        `User with id ${selected_user.id} has been updated`,
       );
-    } catch (error) {
-      console.log(error, "<<< ini error nya");
-    }
-  });
-});
+    });
 
-describe("delete user", () => {
-  const users = require("./db_test/users.json");
+    it("should handle invalid user data during edit", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "reva@mail.com" },
+      });
 
-  beforeAll(async () => {
-    try {
-      await User.bulkCreate(users);
-    } catch (err) {
-      console.log(err, "<<<< masuk ke error beforeAll");
-    }
-  });
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
 
-  afterAll(async () => {
-    await User.sync({ force: true });
-  });
+      const invalidEditData = {
+        // Provide invalid user data here, such as empty fields or invalid values
+        username: "",
+        email: "invalidemail",
+        birthDate: "invalidbirthdate",
+        gender: "invalidgender",
+      };
 
-  it("response with json", async () => {
-    try {
-      const id = 1;
       const response = await request(app)
-        .delete(`/users/${id}`)
-        .set("Accept", "application/json")
-        .set(
-          "access_token",
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJyZXZhQG1haWwuY29tIiwicm9sZSI6Im1lbnRvciIsImlhdCI6MTY5MzIwMjY5MiwiZXhwIjoxNjkzMjg5MDkyfQ.ZzcW34DrZYRq7rGs-IyDQ3oeqo8LmWk3xSLUmb9gYmU"
-        );
+        .put(`/users/${8}`)
+        .set("access_token", accessToken)
+        .send(invalidEditData);
 
-      console.log(response.body, "<<< response body");
+      expect(response.status).toBe(400); // Expect Bad Request status
+      expect(response.body).toHaveProperty("message"); // Check for error message
+    });
+  });
 
-      expect(response.status).toEqual(201);
-      const responseBody = response.body;
-      expect(responseBody).toHaveProperty(
+  describe("DELETE /users/:id", () => {
+    beforeEach(async () => {
+      try {
+        await User.bulkCreate(users);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    it("should delete a user by ID", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "kongz@mail.com" },
+      });
+
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const response = await request(app)
+        .delete(`/users/${selected_user.id}`)
+        .set("access_token", `${accessToken}`);
+
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty(
         "message",
-        `User with id ${id} has been deleted`
+        `User with id ${selected_user.id} has been deleted`,
       );
-    } catch (error) {
-      console.log(error);
-    }
+    });
+
+    it("should handle user not found during deletion", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "emon@mail.com" },
+      });
+
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const nonExistentUserId = 9999; // A user ID that doesn't exist
+
+      const response = await request(app)
+        .delete(`/users/${nonExistentUserId}`)
+        .set("access_token", `${accessToken}`);
+
+      expect(response.status).toBe(404); // Expect Not Found status
+      expect(response.body).toHaveProperty("message", "Data not found"); // Check for error message
+    });
+  });
+
+  describe("GET /users/trx", () => {
+    it("should return false when user has no transaction data", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "user1@gmail.com" },
+      });
+
+      // console.log(selected_user);
+
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const response = await request(app)
+        .get(`/users/trx`)
+        .set("access_token", accessToken);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBe(false);
+    });
+
+    it("should return true when user has a valid transaction", async () => {
+      console.log(transactions, "data transaction");
+
+      const selected_user = await User.findOne({
+        where: { email: "afi@mail.com" },
+      });
+
+      console.log(selected_user, "SELECTED USER "); // ini dapet
+
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const response = await request(app)
+        .get(`/users/trx`)
+        .set("access_token", accessToken);
+
+      console.log(response.body, "DATA RESPONSE BODY");
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBe(true); // FAIL
+    });
   });
 });

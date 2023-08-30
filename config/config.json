@@ -1,19 +1,20 @@
 {
-  "development": {
-    "username": "postgres",
-    "password": "postgres",
-    "database": "serenify",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "test": {
-    "username": "postgres",
-    "password": "postgres",
-    "database": "serenify_test",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "production": {
-    "use_env_variable": "DATABASE_URL"
-  }
+    "development": {
+        "username": "postgres",
+        "password": "postgres",
+        "database": "serenify",
+        "host": "127.0.0.1",
+        "dialect": "postgres"
+    },
+    "test": {
+        "username": "postgres",
+        "password": "postgres",
+        "database": "serenify_test",
+        "host": "127.0.0.1",
+        "dialect": "postgres",
+        "logging": false
+    },
+    "production": {
+        "use_env_variable": "DATABASE_URL"
+    }
 }

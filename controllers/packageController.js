@@ -4,7 +4,7 @@ class PackageController {
     try {
       const result = await Package.findAll({});
 
-      if (!result) throw { name: "Data not found" };
+      if (result.length === 0) throw { name: "NotFound" };
 
       res.status(200).json(result);
     } catch (err) {
@@ -31,17 +31,14 @@ class PackageController {
 
   static async addNewPackage(req, res, next) {
     try {
-      const { name, description, price, duration, schedule } = req.body;
+      const { name, description, price, duration } = req.body;
 
       const created = await Package.create({
         name,
         description,
         price,
         duration,
-        schedule,
       });
-
-      if (!created) throw { name: "ErrorData" };
 
       res.status(201).json({
         message: created,
@@ -54,17 +51,22 @@ class PackageController {
   static async editPackage(req, res, next) {
     try {
       const { id } = req.params;
-      const { name, description, price, duration, schedule } = req.body;
+      const { name, description, price, duration } = req.body;
 
-      console.log(name, description, price, duration, schedule, "<<");
+      const result = await Package.findOne({
+        where: {
+          id,
+        },
+      });
 
-      const editPackage = await Package.update(
+      if (!result) throw { name: "NotFound" };
+
+      await result.update(
         {
           name,
           description,
           price,
           duration,
-          schedule,
         },
         {
           where: {
@@ -73,13 +75,10 @@ class PackageController {
         }
       );
 
-      if (!editPackage) throw { name: "ErrorEdit" };
-
       res.status(201).json({
         message: `Data with id ${id} has been updated`,
       });
     } catch (error) {
-      console.log(error);
       next(error);
     }
   }
