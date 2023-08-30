@@ -58,6 +58,21 @@ describe("testing package", () => {
     expect(responseBody[0]).toHaveProperty("name", "Regular");
   });
 
+  it("should respond with 'Error Authentication' when no access_token is provided", async () => {
+    const response = await request(app)
+      .post("/packages")
+      .send({
+        name: "package testing",
+        description: "Ini description untuk package testing",
+        price: 10000,
+        duration: 10000,
+      })
+      .set("Accept", "application/json");
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe("Error Authentication");
+  });
+
   it("response detail packages with id", async () => {
     const id = 1;
     const response = await request(app)

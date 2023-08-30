@@ -19,7 +19,11 @@ class UserController {
   static async getUserById(req, res, next) {
     try {
       const data = await User.findByPk(req.params.id);
-      console.log(data);
+
+      if (!data) {
+        throw { name: 'NotFound' }
+      }
+
       res.status(200).json({
         id: data.id,
         username: data.username,
@@ -146,23 +150,21 @@ class UserController {
     try {
       const { userId } = req.additionalData;
       console.log(userId, 11);
-      const data = await User.findByPk(userId, {
+      // const data = await User.findByPk(userId, {});
+      const data = await Transaction.findOne({
+        where: {
+          UserId: userId,
+        },
         include: {
-          model: Transaction,
-          where: {
-            status: "success",
-          },
-          order: [["createdAt", "DESC"]],
-          include: {
-            model: Package,
-          },
+          model: Package,
         },
       });
-      if (data.Transactions.length === 0) {
-        throw { name: "NotFound" };
+      if (!data) {
+        res.status(200).json(false);
+        return;
       }
 
-      const lastTransactionUser = data.Transactions[0];
+      const lastTransactionUser = data;
       // Get createdAt
       let today = new Date();
       let createdAt = lastTransactionUser.createdAt;

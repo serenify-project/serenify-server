@@ -2,7 +2,24 @@ const request = require("supertest");
 const app = require("../app");
 const { MentorSchedule, User, Package } = require("../models");
 const { generateToken } = require("../helpers/jwt");
-const mentorschedule = require("../models/mentorschedule");
+
+describe("Get All Schedules", () => {
+  beforeAll(async () => {
+    // Delete all packages to ensure an empty result
+    await MentorSchedule.destroy({
+      truncate: true,
+    });
+  });
+
+  it('should respond with "Data not found" when there are no schedule', async () => {
+    const response = await request(app)
+      .get("/schedules")
+      .set("Accept", "application/json");
+
+    expect(response.status).toEqual(404);
+    expect(response.body).toHaveProperty("message", "Data not found");
+  });
+});
 
 describe("MentorScheduleController", () => {
   // Test data
@@ -61,6 +78,62 @@ describe("MentorScheduleController", () => {
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("date", "2023-08-27T00:00:00.000Z");
     });
+
+    it("add schedule date required", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "reva@mail.com" },
+      });
+
+      let token = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const response = await request(app)
+        .post(`/schedules`)
+        .send({
+          name: "schedule testing",
+          description: "Ini description untuk schedule testing",
+          duration: 10000,
+        })
+        .set("access_token", token)
+        .set("Accept", "application/json");
+
+      console.log(response.status, "<<< status");
+      console.log(response.body, "<<< body");
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty("message", "Date is required");
+    });
+
+    it("add schedule invalid because user", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "user1@gmail.com" },
+      });
+
+      let token = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const response = await request(app)
+        .post(`/schedules`)
+        .send({
+          name: "schedule testing",
+          description: "Ini description untuk schedule testing",
+          price: 10000,
+          duration: 10,
+        })
+        .set("access_token", token);
+
+      expect(response.status).toBe(403);
+      expect(response.body).toHaveProperty(
+        "message",
+        "Forbidden Error Authorization"
+      );
+    });
   });
 
   describe("PATCH /schedules/:id", () => {
@@ -81,21 +154,21 @@ describe("MentorScheduleController", () => {
         .set("Accept", "application/json");
 
       const newStatus = {
-        status: "unavailable"
+        status: "unavailable",
       };
 
       // Update the schedule
       const updateSchedule = await MentorSchedule.update(newStatus, {
         where: {
-          id: createResponse._body.id
-        }
+          id: createResponse._body.id,
+        },
       }); // [1]
 
       // Fetch the updated schedule
       const fetchUpdatedSchedule = await MentorSchedule.findOne({
         where: {
-          id: createResponse._body.id
-        }
+          id: createResponse._body.id,
+        },
       });
 
       const patchResponse = await request(app)
@@ -107,9 +180,38 @@ describe("MentorScheduleController", () => {
       expect(patchResponse.status).toBe(200);
       expect(patchResponse.body).toHaveProperty("message", "status updated");
     });
+
+    it("should respond with 'Data not found' when editing schedules status with non-existent ID", async () => {
+      // Assuming you have a valid `generateToken` function
+      const selected_user = await User.findOne({
+        where: { email: "reva@mail.com" },
+      });
+
+      const token = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const nonExistentId = 999; // Use an ID that doesn't exist in your database
+      const response = await request(app)
+        .patch(`/schedules/${nonExistentId}`)
+        .send({
+          name: "schedules testing edit",
+          description: "Ini description untuk schedules testing edit",
+          price: 10000,
+          duration: 10,
+        })
+        .set("access_token", token)
+        .set("Accept", "application/json");
+
+      console.log(response.status, "<<< response status");
+      console.log(response.body, "<<< response body");
+
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty("message", "Data not found");
+    });
   });
-
-
 
   describe("DELETE /schedules/:id", () => {
     it("should delete a mentor schedule", async () => {
@@ -137,6 +239,27 @@ describe("MentorScheduleController", () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("message", "success to delete");
+    });
+
+    it("delete schedule by id not found", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "reva@mail.com" },
+      });
+
+      let token = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const id = 999;
+      const response = await request(app)
+        .delete(`/schedules/${id}`)
+        .set("access_token", token)
+        .set("Accept", "application/json");
+
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty("message", `Data not found`);
     });
   });
 });

@@ -1,13 +1,19 @@
 const request = require("supertest");
 const app = require("../app");
-const { User } = require("../models");
+const { User, Transaction, Package } = require("../models");
 const { generateToken } = require("../helpers/jwt");
 const { hashPassword } = require("../helpers/bcrypt");
 
 
 describe("User Controller", () => {
   // Test data
+
   const users = require("./db_test/users.json");
+  const packages = require("./db_test/packages.json")
+  const transactions = require("./db_test/transactions.json")
+
+  // console.log(users, "DATA USERS");
+
   users.forEach((user) => {
     user.password = hashPassword(user.password)
   });
@@ -15,6 +21,8 @@ describe("User Controller", () => {
   beforeAll(async () => {
     try {
       await User.bulkCreate(users);
+      await Package.bulkCreate(packages)
+      await Transaction.bulkCreate(transactions)
     } catch (err) {
       console.log(err, 111);
     }
@@ -23,6 +31,8 @@ describe("User Controller", () => {
   afterAll(async () => {
     try {
       await User.sync({ force: true });
+      await Transaction.sync({ force: true });
+      await Package.sync({ force: true });
     } catch (err) {
       console.log(err);
     }
@@ -79,18 +89,6 @@ describe("User Controller", () => {
     });
   });
 
-  describe("GET /users/:id", () => {
-    it("should handle error when user ID is not available", async () => {
-      const nonExistentUserId = 9999; // An ID that doesn't exist
-
-      const response = await request(app)
-        .get(`/users/${nonExistentUserId}`);
-
-      expect(response.status).toBe(404); // Expect a Not Found status
-      expect(response.body).toHaveProperty("message", "Data not found");
-    });
-  });
-
   describe("POST /users/login", () => {
     it("should log in an existing user", async () => {
       const selected_user = await User.findOne({
@@ -142,7 +140,6 @@ describe("User Controller", () => {
     });
   });
 
-
   describe("GET /users/:id", () => {
     it("should get a user by ID", async () => {
       const selected_user = await User.findOne({
@@ -161,6 +158,16 @@ describe("User Controller", () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("id", selected_user.id);
+    });
+
+    it("should handle error when user ID is not available", async () => {
+      const nonExistentUserId = 9999; // An ID that doesn't exist
+
+      const response = await request(app)
+        .get(`/users/${nonExistentUserId}`);
+
+      expect(response.status).toBe(404); // Expect a Not Found status
+      expect(response.body).toHaveProperty("message", "Data not found");
     });
   });
 
@@ -215,7 +222,6 @@ describe("User Controller", () => {
   });
 
   describe("DELETE /users/:id", () => {
-
     beforeEach(async () => {
       try {
         await User.bulkCreate(users);
@@ -226,7 +232,7 @@ describe("User Controller", () => {
 
     it("should delete a user by ID", async () => {
       const selected_user = await User.findOne({
-        where: { email: "afi@mail.com" },
+        where: { email: "kongz@mail.com" },
       });
 
       const accessToken = generateToken({
@@ -262,6 +268,55 @@ describe("User Controller", () => {
 
       expect(response.status).toBe(404); // Expect Not Found status
       expect(response.body).toHaveProperty("message", "Data not found"); // Check for error message
+    });
+  });
+
+  describe("GET /users/trx", () => {
+    it("should return false when user has no transaction data", async () => {
+      const selected_user = await User.findOne({
+        where: { email: "user1@gmail.com" },
+      });
+
+      // console.log(selected_user);
+
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const response = await request(app)
+        .get(`/users/trx`)
+        .set("access_token", accessToken);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBe(false);
+    });
+
+    it("should return true when user has a valid transaction", async () => {
+
+      console.log(transactions, "data transaction");
+
+      const selected_user = await User.findOne({
+        where: { email: "afi@mail.com" },
+      });
+
+      console.log(selected_user, "SELECTED USER "); // ini dapet
+
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
+      });
+
+      const response = await request(app)
+        .get(`/users/trx`)
+        .set("access_token", accessToken);
+
+      console.log(response.body, "DATA RESPONSE BODY");
+
+      expect(response.status).toBe(200);
+      expect(response.body).toBe(true); // FAIL
     });
   });
 });
