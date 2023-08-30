@@ -4,25 +4,24 @@ const { User, Transaction, Package } = require("../models");
 const { generateToken } = require("../helpers/jwt");
 const { hashPassword } = require("../helpers/bcrypt");
 
-
 describe("User Controller", () => {
   // Test data
 
   const users = require("./db_test/users.json");
-  const packages = require("./db_test/packages.json")
-  const transactions = require("./db_test/transactions.json")
+  const packages = require("./db_test/packages.json");
+  const transactions = require("./db_test/transactions.json");
 
   // console.log(users, "DATA USERS");
 
   users.forEach((user) => {
-    user.password = hashPassword(user.password)
+    user.password = hashPassword(user.password);
   });
 
   beforeAll(async () => {
     try {
       await User.bulkCreate(users);
-      await Package.bulkCreate(packages)
-      await Transaction.bulkCreate(transactions)
+      await Package.bulkCreate(packages);
+      await Transaction.bulkCreate(transactions);
     } catch (err) {
       console.log(err, 111);
     }
@@ -40,13 +39,11 @@ describe("User Controller", () => {
 
   describe("GET /users", () => {
     it("should get a list of users", async () => {
-      const response = await request(app)
-        .get("/users")
+      const response = await request(app).get("/users");
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
     });
-
   });
 
   describe("POST /users/register", () => {
@@ -59,9 +56,7 @@ describe("User Controller", () => {
         gender: "female",
       };
 
-      const response = await request(app)
-        .post("/users/register")
-        .send(newUser);
+      const response = await request(app).post("/users/register").send(newUser);
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("id");
@@ -79,9 +74,7 @@ describe("User Controller", () => {
         gender: "female",
       };
 
-      const response = await request(app)
-        .post("/users/register")
-        .send(newUser);
+      const response = await request(app).post("/users/register").send(newUser);
 
       expect(response.status).toBe(400); // Expect a Bad Request status
       expect(response.body).toHaveProperty("message");
@@ -100,9 +93,7 @@ describe("User Controller", () => {
         password: "123456",
       };
 
-      const response = await request(app)
-        .post("/users/login")
-        .send(loginData);
+      const response = await request(app).post("/users/login").send(loginData);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("access_token");
@@ -122,7 +113,10 @@ describe("User Controller", () => {
         .send(invalidCredentials);
 
       expect(response.status).toBe(401); // Expect Unauthorized status
-      expect(response.body).toHaveProperty("message", "Invalid email or password");
+      expect(response.body).toHaveProperty(
+        "message",
+        "Invalid email or password",
+      );
     });
 
     it("should handle invalid login credentials", async () => {
@@ -136,12 +130,15 @@ describe("User Controller", () => {
         .send(invalidCredentials);
 
       expect(response.status).toBe(401); // Expect Unauthorized status
-      expect(response.body).toHaveProperty("message", "Invalid email or password");
+      expect(response.body).toHaveProperty(
+        "message",
+        "Invalid email or password",
+      );
     });
   });
 
-  describe("GET /users/:id", () => {
-    it("should get a user by ID", async () => {
+  describe("GET /users/detail", () => {
+    it("should get a user detail", async () => {
       const selected_user = await User.findOne({
         where: { email: "emon@mail.com" },
       });
@@ -153,25 +150,15 @@ describe("User Controller", () => {
       });
 
       const response = await request(app)
-        .get(`/users/${selected_user.id}`)
+        .get(`/users/detail`)
         .set("access_token", `${accessToken}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("id", selected_user.id);
     });
-
-    it("should handle error when user ID is not available", async () => {
-      const nonExistentUserId = 9999; // An ID that doesn't exist
-
-      const response = await request(app)
-        .get(`/users/${nonExistentUserId}`);
-
-      expect(response.status).toBe(404); // Expect a Not Found status
-      expect(response.body).toHaveProperty("message", "Data not found");
-    });
   });
 
-  describe("PUT /users/:id", () => {
+  describe("PUT /users/edit", () => {
     it("should edit a user by ID", async () => {
       const selected_user = await User.findOne({
         where: { email: "reva@mail.com" },
@@ -183,25 +170,32 @@ describe("User Controller", () => {
         role: selected_user.role,
       });
 
-
       const editedData = {
         username: "newUsername",
-        email: "newemail@example.com",
         // ... Other fields to edit
       };
 
       const response = await request(app)
-        .put(`/users/${selected_user.id}`)
+        .put(`/users/edit`)
         .set("access_token", `${accessToken}`)
         .send(editedData);
 
       expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty("message", `User with id ${selected_user.id} has been updated`);
+      expect(response.body).toHaveProperty(
+        "message",
+        `User with id ${selected_user.id} has been updated`,
+      );
     });
 
     it("should handle invalid user data during edit", async () => {
       const selected_user = await User.findOne({
-        where: { email: "invalid@mail.com" },
+        where: { email: "reva@mail.com" },
+      });
+
+      const accessToken = generateToken({
+        id: selected_user.id,
+        email: selected_user.email,
+        role: selected_user.role,
       });
 
       const invalidEditData = {
@@ -214,6 +208,7 @@ describe("User Controller", () => {
 
       const response = await request(app)
         .put(`/users/${8}`)
+        .set("access_token", accessToken)
         .send(invalidEditData);
 
       expect(response.status).toBe(400); // Expect Bad Request status
@@ -246,7 +241,10 @@ describe("User Controller", () => {
         .set("access_token", `${accessToken}`);
 
       expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty("message", `User with id ${selected_user.id} has been deleted`);
+      expect(response.body).toHaveProperty(
+        "message",
+        `User with id ${selected_user.id} has been deleted`,
+      );
     });
 
     it("should handle user not found during deletion", async () => {
@@ -294,7 +292,6 @@ describe("User Controller", () => {
     });
 
     it("should return true when user has a valid transaction", async () => {
-
       console.log(transactions, "data transaction");
 
       const selected_user = await User.findOne({

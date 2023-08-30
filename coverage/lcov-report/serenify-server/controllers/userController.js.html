@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.2% </span>
+                <span class="strong">91.3% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>65/69</span>
+                <span class='fraction'>63/69</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">70% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>15/20</span>
+                <span class='fraction'>14/20</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.2% </span>
+                <span class="strong">92.64% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>65/69</span>
+                <span class='fraction'>63/68</span>
             </div>
         
             
@@ -256,12 +256,7 @@
 <a name='L191'></a><a href='#L191'>191</a>
 <a name='L192'></a><a href='#L192'>192</a>
 <a name='L193'></a><a href='#L193'>193</a>
-<a name='L194'></a><a href='#L194'>194</a>
-<a name='L195'></a><a href='#L195'>195</a>
-<a name='L196'></a><a href='#L196'>196</a>
-<a name='L197'></a><a href='#L197'>197</a>
-<a name='L198'></a><a href='#L198'>198</a>
-<a name='L199'></a><a href='#L199'>199</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">6x</span>
+<a name='L194'></a><a href='#L194'>194</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -280,13 +275,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -296,7 +286,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -359,7 +349,6 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -373,6 +362,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -479,12 +469,7 @@ class UserController {
 &nbsp;
   static async getUserById(req, res, next) {
     try {
-      const data = await User.findByPk(req.params.id);
-&nbsp;
-      if (!data) {
-        throw { name: 'NotFound' }
-      }
-&nbsp;
+      const data = await User.findByPk(req.additionalData.userId);
       res.status(200).json({
         id: data.id,
         username: data.username,
@@ -494,7 +479,7 @@ class UserController {
         gender: data.gender,
       });
     } catch (err) {
-      next(err);
+<span class="cstat-no" title="statement not covered" >      next(err);</span>
     }
   }
 &nbsp;
@@ -505,7 +490,7 @@ class UserController {
 &nbsp;
       const user = await User.create({
         username,
-        email,
+        email: email.toLowerCase(),
         password,
         role: "mentee",
         birthDate,
@@ -528,7 +513,7 @@ class UserController {
 &nbsp;
       const user = await User.findOne({
         where: {
-          email,
+          email: email.toLowerCase(),
         },
       });
       if (!user) {
@@ -536,7 +521,7 @@ class UserController {
       }
       const token = generateToken({
         id: user.id,
-        email: user.email,
+        email: user.email.toLowerCase(),
         role: user.role,
       });
       <span class="missing-if-branch" title="else path not taken" >E</span>if (checkPassword(password, user.password)) {
@@ -555,13 +540,11 @@ class UserController {
 &nbsp;
   static async editUser(req, res, next) {
     try {
-      const { id } = req.params;
-      const { username, email, birthDate, gender } = req.body;
-&nbsp;
+      const { userId: id } = req.additionalData;
+      const { username, birthDate, gender } = req.body;
       const editUser = await User.update(
         {
           username,
-          email,
           birthDate,
           gender,
         },
@@ -571,6 +554,8 @@ class UserController {
           },
         },
       );
+&nbsp;
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (!editUser) <span class="cstat-no" title="statement not covered" >throw { name: "userEdit" };</span>
 &nbsp;
       res.status(201).json({
         message: `User with id ${id} has been updated`,
@@ -664,7 +649,7 @@ module.exports = UserController;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-08-30T18:31:39.589Z
+                at 2023-08-30T22:06:41.991Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
