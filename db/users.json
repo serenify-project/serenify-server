@@ -5,7 +5,8 @@
     "password": "123456",
     "role": "mentee",
     "birthDate": "2000-08-21 14:20:27.816 +0700",
-    "gender": "male"
+    "gender": "male",
+    "userFirebaseId": "JJnoARcPgXX9V5LmWizKmKRPWGQ2"
   },
   {
     "username": "Reva",
@@ -13,7 +14,8 @@
     "password": "123456",
     "role": "mentor",
     "birthDate": "2000-08-21 14:20:27.816 +0700",
-    "gender": "female"
+    "gender": "female",
+    "userFirebaseId": "avn132mrTQXBjyQOiV2stR86ZyB3"
   },
   {
     "username": "Emon",
@@ -21,7 +23,8 @@
     "password": "123456",
     "role": "mentor",
     "birthDate": "2000-08-21 14:20:27.816 +0700",
-    "gender": "male"
+    "gender": "male",
+    "userFirebaseId": "MArb0JqFRufgtkgj2bWKzoSEqNi1"
   },
   {
     "username": "Afi",
@@ -29,22 +32,7 @@
     "password": "123456",
     "role": "mentor",
     "birthDate": "2000-08-21 14:20:27.816 +0700",
-    "gender": "female"
-  },
-  {
-    "username": "Raisa",
-    "email": "raisa@mail.com",
-    "password": "123456",
-    "role": "mentee",
-    "birthDate": "2000-08-21 14:20:27.816 +0700",
-    "gender": "male"
-  },
-  {
-    "username": "Amir",
-    "email": "amir@gmail.com",
-    "password": "123456",
-    "role": "mentee",
-    "birthDate": "2000-08-21 14:20:27.816 +0700",
-    "gender": "male"
+    "gender": "female",
+    "userFirebaseId": "JkpkDULuaYchF3rk8dRiKMQDrLk2"
   }
 ]
